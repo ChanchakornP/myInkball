@@ -5,14 +5,6 @@ import processing.core.PImage;
 import processing.core.PVector;
 import java.util.HashMap;
 
-enum stateColor {
-    White,
-    Orange,
-    Blue,
-    Green,
-    Yellow
-}
-
 public abstract class DynamicObject {
     public PImage objImg;
     public float[] position = new float[2];
