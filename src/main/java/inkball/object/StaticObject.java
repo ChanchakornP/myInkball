@@ -94,6 +94,13 @@ public abstract class StaticObject {
         y2 = y + height;
     }
 
+    public StaticObject(float x1, float y1, float x2, float y2) {
+        this.x1 = x1;
+        this.x2 = x2;
+        this.y1 = y2;
+        this.y2 = y1;
+    }
+
     public StaticObject(HashMap<String, PImage> localSprites, char state, float x, float y) {
         setupLocalSprites(localSprites);
         this.state = state;

@@ -27,7 +27,7 @@ public class Hole extends StaticObject {
         // PVector _newballVal = PVector.add(ball.getVelocityVec(), gravityVector);
         ball.setVel(_newballVal);
         if (ballSize < 10) {
-            // capture here
+            ball.setCaptured(true);
         }
         if (ballSize > 32)
             ballSize = 32;

@@ -217,7 +217,7 @@ public class App extends PApplet {
         frameRate(FPS);
         getSprite();
         getconfig();
-        initializeBoard("level2.txt");
+        initializeBoard("level3.txt");
         // See PApplet javadoc:
         // loadJSONObject(configPath)
         // the image is loaded from relative path: "src/main/resources/inkball/..."
@@ -298,18 +298,20 @@ public class App extends PApplet {
         for (Ball o : Balls) {
             o.draw(this);
         }
+        // Line x = new Line(100, 100, 200, 200);
 
         for (StaticObject o : staticObj) {
-            for (Ball ball : Balls) {
-                if (o.objName.equals("hole") && o.intersect(ball)) {
-                    o.interactWithBall(this, ball);
-                }
-            }
-        }
-
-        for (StaticObject o : staticObj) {
-            for (Ball ball : Balls) {
-                if (o.objName.equals("wall")) {
+            Iterator<Ball> ballIterator = Balls.iterator();
+            while (ballIterator.hasNext()) {
+                Ball ball = ballIterator.next();
+                if (o.objName.equals("hole")) {
+                    if (o.intersect(ball)) {
+                        o.interactWithBall(this, ball);
+                        if (ball.getCaptured()) {
+                            // ballIterator.remove();
+                        }
+                    }
+                } else if (o.objName.equals("wall")) {
                     if (o.intersect(ball)) {
                         o.interactWithBall(this, ball);
                     }
@@ -321,8 +323,26 @@ public class App extends PApplet {
                         }
                     }
                 }
+
             }
         }
+
+        // for (StaticObject o : staticObj) {
+        // for (Ball ball : Balls) {
+        // if (o.objName.equals("wall")) {
+        // if (o.intersect(ball)) {
+        // o.interactWithBall(this, ball);
+        // }
+        // // Edge case, when collide at the exact border
+        // if (o.intersectEdge(ball)) {
+        // ball.inverseVel();
+        // if (o.getState() != '0') {
+        // ball.updateState(o.getState());
+        // }
+        // }
+        // }
+        // }
+        // }
 
         for (Ball ball : Balls) {
             ball.move();

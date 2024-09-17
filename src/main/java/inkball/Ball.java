@@ -7,6 +7,16 @@ import processing.core.PVector;
 import java.util.HashMap;
 
 public class Ball extends DynamicObject implements Collidable {
+    private boolean captured = false;
+
+    public void setCaptured(boolean x) {
+        captured = x;
+    }
+
+    public boolean getCaptured() {
+        return captured;
+    }
+
     public void move() {
         float[] velArray = vel.array();
         float newX = this.position[0] + velArray[0];

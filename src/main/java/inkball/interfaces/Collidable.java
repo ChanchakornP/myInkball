@@ -6,5 +6,5 @@ public interface Collidable {
 
     // public float[][] getWallLines();
 
-    // public isCollide();
+    // public whichSideCollide();
 }
