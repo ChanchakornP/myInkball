@@ -304,46 +304,14 @@ public class App extends PApplet {
             Iterator<Ball> ballIterator = Balls.iterator();
             while (ballIterator.hasNext()) {
                 Ball ball = ballIterator.next();
-                if (o.objName.equals("hole")) {
-                    if (o.intersect(ball)) {
-                        o.interactWithBall(this, ball);
-                        if (ball.getCaptured()) {
-                            // ballIterator.remove();
-                        }
-                    }
-                } else if (o.objName.equals("wall")) {
-                    if (o.intersect(ball)) {
-                        o.interactWithBall(this, ball);
-                    }
-                    // Edge case, when collide at the exact border
-                    if (o.intersectEdge(ball)) {
-                        ball.inverseVel();
-                        if (o.getState() != '0') {
-                            ball.updateState(o.getState());
-                        }
-                    }
-                }
+                o.interactWithBall(this, ball);
 
+                // Remove ball if it is captured by a hole
+                if (ball.getCaptured()) {
+                    // ballIterator.remove();
+                }
             }
         }
-
-        // for (StaticObject o : staticObj) {
-        // for (Ball ball : Balls) {
-        // if (o.objName.equals("wall")) {
-        // if (o.intersect(ball)) {
-        // o.interactWithBall(this, ball);
-        // }
-        // // Edge case, when collide at the exact border
-        // if (o.intersectEdge(ball)) {
-        // ball.inverseVel();
-        // if (o.getState() != '0') {
-        // ball.updateState(o.getState());
-        // }
-        // }
-        // }
-        // }
-        // }
-
         for (Ball ball : Balls) {
             ball.move();
         }

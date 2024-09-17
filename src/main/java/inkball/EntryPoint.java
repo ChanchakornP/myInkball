@@ -14,4 +14,11 @@ public class EntryPoint extends StaticObject {
     public void updateState() {
     }
 
+    public boolean intersect(Ball ball) {
+        return false;
+    }
+
+    public boolean intersectEdge(Ball ball) {
+        return false;
+    }
 }

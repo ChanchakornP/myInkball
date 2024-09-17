@@ -11,6 +11,14 @@ public class Tile extends StaticObject {
     public void interactWithBall(App app, Ball ball) {
     }
 
+    public boolean intersect(Ball ball) {
+        return false;
+    }
+
+    public boolean intersectEdge(Ball ball) {
+        return false;
+    }
+
     public void updateState() {
     }
 

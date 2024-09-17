@@ -8,6 +8,7 @@ public class Line extends StaticObject {
         super(x1, y1, x2, y2);
     }
 
+    @Override
     public void interactWithBall(App app, Ball ball) {
         float distance = Float.MAX_VALUE;
         PVector normVec = new PVector(0, 0);
@@ -28,4 +29,10 @@ public class Line extends StaticObject {
             ball.reflect(normVec);
         }
     }
+
+    @Override
+    public boolean intersect(Ball ball) {
+        return false;
+    }
+
 }
