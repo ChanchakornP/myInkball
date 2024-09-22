@@ -1,9 +1,9 @@
 package inkball;
 
-import inkball.object.StaticObject;
+import inkball.object.RectangleObject;
 import processing.core.PImage;
 
-public class EntryPoint extends StaticObject {
+public class EntryPoint extends RectangleObject {
     public EntryPoint(PImage objImg, float x, float y) {
         super(objImg, x, y);
     }

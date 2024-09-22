@@ -1,9 +1,9 @@
 package inkball;
 
-import inkball.object.StaticObject;
+import inkball.object.RectangleObject;
 import processing.core.PImage;
 
-public class Tile extends StaticObject {
+public class Tile extends RectangleObject {
     public Tile(PImage objImg, float x, float y) {
         super(objImg, x, y);
     }

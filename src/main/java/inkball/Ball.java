@@ -1,12 +1,11 @@
 package inkball;
 
-import inkball.interfaces.Collidable;
 import inkball.object.DynamicObject;
 import processing.core.PImage;
 import processing.core.PVector;
 import java.util.HashMap;
 
-public class Ball extends DynamicObject implements Collidable {
+public class Ball extends DynamicObject {
     private boolean captured = false;
 
     public void setCaptured(boolean x) {
@@ -58,20 +57,24 @@ public class Ball extends DynamicObject implements Collidable {
         return height / 2; // assume width == height
     }
 
+    // nextFrame base on given velocity
     public float[] nextFramePosition() {
-        float[] vel = getVelocity();
         float[] nextPos = new float[2];
-        nextPos[0] = this.position[0] + vel[0];
-        nextPos[1] = this.position[1] + vel[1];
+        float[] vel = getVelocity();
+        float[] center = getCenter();
+        nextPos[0] = center[0] + vel[0];
+        nextPos[1] = center[1] + vel[1];
         return nextPos;
     }
 
-    // nextFrame base on given velocity
-    public float[] nextFramePosition(float vel[]) {
+    public PVector nextFramePositionVec() {
         float[] nextPos = new float[2];
-        nextPos[0] = this.position[0] + vel[0];
-        nextPos[1] = this.position[1] + vel[1];
-        return nextPos;
+        float[] vel = getVelocity();
+        float[] center = getCenter();
+        nextPos[0] = center[0] + vel[0];
+        nextPos[1] = center[1] + vel[1];
+        PVector nextPosVec = new PVector(nextPos[0], nextPos[1]);
+        return nextPosVec;
     }
 
     public void inverseVel() {
@@ -99,7 +102,7 @@ public class Ball extends DynamicObject implements Collidable {
 
     public void draw(App app) {
         PImage objImgTmp = getLocalSprites().get("ball" + getState()).copy();
-        if (this.width < 32) {
+        if (this.width < 28) {
             objImgTmp.resize((int) this.width, (int) this.height);
         }
         app.image(objImgTmp, position[0], position[1]);

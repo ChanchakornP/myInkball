@@ -7,15 +7,12 @@ import processing.data.JSONObject;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
 import java.io.*;
 import java.util.*;
 
-import inkball.interfaces.Collidable;
-import inkball.object.DynamicObject;
+import inkball.object.LineObject;
 import inkball.object.StaticObject;
+import inkball.state.Color;
 
 public class App extends PApplet {
 
@@ -31,7 +28,7 @@ public class App extends PApplet {
 
     public static final int INITIAL_PARACHUTES = 1;
 
-    public static final int FPS = 300;
+    public static final int FPS = 30;
     public Tile[][] board = new Tile[BOARD_HEIGHT][BOARD_WIDTH];
 
     public String configPath;
@@ -81,7 +78,17 @@ public class App extends PApplet {
         json = loadJSONObject(this.configPath);
         level = json.getJSONArray("levels");
         incScore = json.getJSONObject("score_increase_from_hole_capture");
+        for (Object k : incScore.keys()) {
+            String key = k.toString();
+            int reward = incScore.getInt(key);
+            Color.setReward(key, reward);
+        }
         punishScore = json.getJSONObject("score_decrease_from_wrong_hole");
+        for (Object k : punishScore.keys()) {
+            String key = k.toString();
+            int penalty = punishScore.getInt(key);
+            Color.setPenalty(key, penalty);
+        }
     }
 
     public void addStaticObject(String filename, int i, int current_row) {
@@ -217,7 +224,7 @@ public class App extends PApplet {
         frameRate(FPS);
         getSprite();
         getconfig();
-        initializeBoard("level3.txt");
+        initializeBoard("level1.txt");
         // See PApplet javadoc:
         // loadJSONObject(configPath)
         // the image is loaded from relative path: "src/main/resources/inkball/..."
@@ -252,13 +259,30 @@ public class App extends PApplet {
 
     }
 
+    public List<LineObject> lines = new ArrayList<>();
+    private LineObject currentLine; // To keep track of the current line being drawn
+
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.getButton() == App.LEFT) {
+            currentLine = new LineObject();
+            lines.add(currentLine);
+        } else if (e.getButton() == App.RIGHT) {
+
+        }
+
         // create a new player-drawn line object
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (e.getButton() == App.LEFT) {
+            int x = e.getX();
+            int y = e.getY();
+            currentLine.addPoints(x, y);
+        } else {
+
+        }
         // add line segments to player-drawn line object if left mouse button is held
 
         // remove player-drawn line object if right mouse button is held
@@ -267,7 +291,7 @@ public class App extends PApplet {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        currentLine = new LineObject();
     }
 
     /**
@@ -281,6 +305,18 @@ public class App extends PApplet {
             gameContinue();
         }
 
+    }
+
+    private int startTime;
+    private int elapsedTime;
+
+    public void timer() {
+        background(200);
+        elapsedTime = millis() - startTime;
+        String time = "Time: " + Integer.toString(elapsedTime / 1000);
+        textSize(30);
+        fill(0);
+        text(time, 400, App.TOPBAR - 10); // prints string at coordinates 150,
     }
 
     public void gameContinue() {
@@ -298,7 +334,21 @@ public class App extends PApplet {
         for (Ball o : Balls) {
             o.draw(this);
         }
-        // Line x = new Line(100, 100, 200, 200);
+
+        for (LineObject line : lines) {
+            line.draw(this);
+        }
+
+        for (Ball ball : Balls) {
+            Iterator<LineObject> linesIterator = lines.iterator();
+            while (linesIterator.hasNext()) {
+                LineObject line = linesIterator.next();
+                if (line.intersect(ball)) {
+                    line.interactWithBall(this, ball);
+                    linesIterator.remove();
+                }
+            }
+        }
 
         for (StaticObject o : staticObj) {
             Iterator<Ball> ballIterator = Balls.iterator();
@@ -312,6 +362,7 @@ public class App extends PApplet {
                 }
             }
         }
+
         for (Ball ball : Balls) {
             ball.move();
         }
