@@ -3,10 +3,9 @@ package inkball.object;
 import inkball.App;
 import inkball.Ball;
 import processing.core.PImage;
-import java.util.HashMap;
+import java.util.*;
 
 public abstract class RectangleObject extends StaticObject {
-    public String objName = "obj";
     public float width, height;
     public float x1, x2, y1, y2;
     public HashMap<String, PImage> localSprites = new HashMap<>();
@@ -14,6 +13,9 @@ public abstract class RectangleObject extends StaticObject {
     public abstract void interactWithBall(App app, Ball ball);
 
     public abstract boolean intersect(Ball ball);
+
+    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
+    }
 
     public void setupLocalSprites(HashMap<String, PImage> localSprites) {
         this.localSprites = localSprites;

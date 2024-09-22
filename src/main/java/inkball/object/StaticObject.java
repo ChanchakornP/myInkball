@@ -3,19 +3,24 @@ package inkball.object;
 import inkball.App;
 import inkball.Ball;
 import processing.core.PImage;
-import java.util.HashMap;
+import java.util.*;
 
 public abstract class StaticObject {
-        public PImage objImg;
-        public String objName = "obj";
-        public float[] position = new float[2];
+        protected PImage objImg;
+        protected String objName = "obj";
+        protected float[] position = new float[2];
         protected int state;
 
         public HashMap<String, PImage> localSprites = new HashMap<>();
 
         public abstract void interactWithBall(App app, Ball ball);
 
+        public abstract void interactWithBall(App app, List<Ball> ball, String BallColor);
+
         public abstract boolean intersect(Ball ball);
+
+        public void updateInfo() {
+        }
 
         public void draw(App app) {
                 app.image(this.objImg, position[0], position[1]);
@@ -28,4 +33,13 @@ public abstract class StaticObject {
         public int getState() {
                 return state;
         }
+
+        public String getObjName() {
+                return this.objName;
+        }
+
+        public float[] getPosition() {
+                return position;
+        }
+
 }

@@ -68,6 +68,9 @@ public class LineObject extends StaticObject {
         }
     }
 
+    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
+    }
+
     public boolean intersect(Ball ball) {
         for (PVector[] line : lines) {
             if (lineIntersect(ball, line)) {

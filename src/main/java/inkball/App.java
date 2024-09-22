@@ -38,7 +38,7 @@ public class App extends PApplet {
     private HashMap<String, PImage> sprites = new HashMap<>();
     public List<StaticObject> staticObj = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
-    public List<String> BallsInQueue = new ArrayList<>();
+    public Queue<String> BallsInQueue = new LinkedList<>();
     public int TotalScore;
 
     public void getSprite() {
@@ -92,79 +92,52 @@ public class App extends PApplet {
         }
     }
 
+    private HashMap<String, PImage> loadSprites(String[] spriteNames) {
+        HashMap<String, PImage> sprites = new HashMap<>();
+        for (String spriteName : spriteNames) {
+            PImage result = loadImage(
+                    this.getClass()
+                            .getResource(spriteName + ".png")
+                            .getPath()
+                            .toLowerCase(Locale.ROOT)
+                            .replace("%20", " "));
+            sprites.put(spriteName, result);
+        }
+        return sprites;
+    }
+
     public void addStaticObject(String filename, int i, int current_row) {
-        PImage objImg = sprites.get(filename);
         StaticObject obj;
+        int xPos = i * CELLSIZE;
+        int yPos = current_row * CELLSIZE + TOPBAR;
 
         if (filename.startsWith("wall")) {
-            String[] local_sprites = new String[] {
-                    "wall0",
-                    "wall1",
-                    "wall2",
-                    "wall3",
-                    "wall4",
-            };
-            HashMap<String, PImage> localSprites = new HashMap<>();
-
-            for (int idx = 0; idx < local_sprites.length; idx++) {
-                PImage result;
-                result = loadImage(
-                        this.getClass().getResource(local_sprites[idx] + ".png").getPath().toLowerCase(Locale.ROOT)
-                                .replace("%20", " "));
-                localSprites.put(local_sprites[idx], result);
-            }
-            // obj = new Wall(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
+            String[] wallSprites = { "wall0", "wall1", "wall2", "wall3", "wall4" };
+            HashMap<String, PImage> wallSpriteMap = loadSprites(wallSprites);
             int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
-            obj = new Wall(localSprites, state, i * CELLSIZE,
-                    current_row * CELLSIZE + TOPBAR);
+            obj = new Wall(wallSpriteMap, state, xPos, yPos);
         } else if (filename.startsWith("hole")) {
-            String[] local_sprites = new String[] {
-                    "hole0",
-                    "hole1",
-                    "hole2",
-                    "hole3",
-                    "hole4",
-            };
-            HashMap<String, PImage> localSprites = new HashMap<>();
-
-            for (int idx = 0; idx < local_sprites.length; idx++) {
-                PImage result;
-                result = loadImage(
-                        this.getClass().getResource(local_sprites[idx] + ".png").getPath().toLowerCase(Locale.ROOT)
-                                .replace("%20", " "));
-                localSprites.put(local_sprites[idx], result);
-            }
+            String[] holeSprites = { "hole0", "hole1", "hole2", "hole3", "hole4" };
+            HashMap<String, PImage> holeSpriteMap = loadSprites(holeSprites);
             int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
-            obj = new Hole(localSprites, state, i * CELLSIZE,
-                    current_row * CELLSIZE + TOPBAR);
-
+            obj = new Hole(holeSpriteMap, state, xPos, yPos);
         } else if (filename.equals("entrypoint")) {
-            obj = new EntryPoint(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
+            obj = new EntryPoint(sprites.get(filename), xPos, yPos);
         } else {
             obj = null;
         }
-        staticObj.add(obj);
+
+        if (obj != null) {
+            staticObj.add(obj);
+        }
     }
 
     public void addDynamicObject(char ballNumber, int i, int current_row) {
-        String[] local_sprites = new String[] {
-                "ball0",
-                "ball1",
-                "ball2",
-                "ball3",
-                "ball4",
-        };
-        HashMap<String, PImage> localSprites = new HashMap<>();
+        String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
+        HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
 
-        for (int idx = 0; idx < local_sprites.length; idx++) {
-            PImage result;
-            result = loadImage(
-                    this.getClass().getResource(local_sprites[idx] + ".png").getPath().toLowerCase(Locale.ROOT)
-                            .replace("%20", " "));
-            localSprites.put(local_sprites[idx], result);
-        }
-        Ball obj = new Ball(localSprites, Character.getNumericValue(ballNumber), i * CELLSIZE,
-                current_row * CELLSIZE + TOPBAR);
+        Ball obj = new Ball(ballSpriteMap, Character.getNumericValue(ballNumber),
+                i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
         Balls.add(obj);
     }
 
@@ -326,6 +299,8 @@ public class App extends PApplet {
     int stage;
     float incMod;
     float decMod;
+    int timeLimit;
+    int spawnInterval;
 
     @Override
     public void draw() {
@@ -333,7 +308,7 @@ public class App extends PApplet {
         if (gamestop) {
 
         } else {
-            if (BallsInQueue.size() == 0) {
+            if (BallsInQueue.size() == 0 && Balls.size() == 0) {
                 try {
                     JSONObject stageInfo = levels.getJSONObject(stage);
                     String layout = stageInfo.getString("layout");
@@ -344,6 +319,10 @@ public class App extends PApplet {
                     }
                     incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
                     decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
+                    spawnInterval = stageInfo.getInt("spawn_interval");
+                    timeLimit = stageInfo.getInt("time");
+                    prevStageTime = millis();
+                    spawnBufferTime = millis();
                     stage++;
                 } catch (RuntimeException e) {
                     gamestop = true;
@@ -353,18 +332,23 @@ public class App extends PApplet {
         }
     }
 
-    private int startTime;
     private int elapsedTime;
+    private int prevStageTime;
+
+    private int spawnBufferTime;
+    private int spawnCounter;
 
     public void timer() {
         background(200);
-        elapsedTime = millis() - startTime;
-        String time = "Time: " + Integer.toString(elapsedTime / 1000);
+        elapsedTime = millis() - prevStageTime;
+        spawnCounter = millis() - spawnBufferTime;
+        int timeLeft = timeLimit - elapsedTime / 1000;
+        String time = "Time: " + Integer.toString(timeLeft);
         textSize(20);
         fill(0);
-        text(time, 450, App.TOPBAR - 10); // prints string at coordinates 150,
+        text(time, 450, App.TOPBAR - 10);
         String score = "Score: " + Integer.toString(TotalScore);
-        text(score, 450, App.TOPBAR - 40); // prints string at coordinates 150,
+        text(score, 450, App.TOPBAR - 40);
     }
 
     public void gameContinue() {
@@ -411,6 +395,29 @@ public class App extends PApplet {
                     ballIterator.remove();
                 }
             }
+        }
+
+        // inefficient here. Ignore it for now.
+        if (BallsInQueue.size() > 0 && spawnCounter >= spawnInterval * 1000) {
+            List<StaticObject> spawners = new ArrayList<>();
+            for (StaticObject o : staticObj) {
+                if (o.getObjName().equals("EntryPoint")) {
+                    spawners.add(o);
+                }
+            }
+            Random random = new Random();
+
+            StaticObject randomEntryPoint = spawners.get(random.nextInt(spawners.size()));
+
+            String ballColor = BallsInQueue.remove();
+            String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
+            HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
+            float[] spawnPos = randomEntryPoint.getPosition();
+            Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
+                    spawnPos[0], spawnPos[1]);
+            Balls.add(obj);
+            spawnBufferTime = millis();
+            spawnCounter = millis() - spawnBufferTime;
         }
 
         for (Ball ball : Balls) {
