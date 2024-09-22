@@ -4,13 +4,14 @@ import inkball.object.RectangleObject;
 import processing.core.PImage;
 import processing.core.PVector;
 import java.util.*;
+import inkball.state.Color;
 
 public class Wall extends RectangleObject {
         public int wallNumber = 0;
 
-        public Wall(HashMap<String, PImage> localSprites, char state, float x, float y) {
+        public Wall(HashMap<String, PImage> localSprites, int state, float x, float y) {
                 super(localSprites, state, x, y);
-                PImage objImage = localSprites.get("wall" + state);
+                PImage objImage = localSprites.get("wall" + String.valueOf(state));
                 this.objImg = objImage;
                 position[0] = x;
                 position[1] = y;
@@ -160,7 +161,7 @@ public class Wall extends RectangleObject {
                         ball.inverseVel();
                 }
 
-                if (getState() != '0') {
+                if (getState() != Color.GREY.ordinal()) {
                         ball.updateState(getState());
                 }
         }

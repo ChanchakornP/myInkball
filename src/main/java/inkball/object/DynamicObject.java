@@ -11,7 +11,7 @@ public abstract class DynamicObject {
     public float width, height;
     protected PVector vel = new PVector(2, 2);
     private HashMap<String, PImage> localSprites = new HashMap<>();
-    private char state;
+    protected int state;
 
     public abstract void move();
 
@@ -23,7 +23,7 @@ public abstract class DynamicObject {
         this.height = objImage.height;
     }
 
-    public DynamicObject(HashMap<String, PImage> localSprites, char state, float x, float y) {
+    public DynamicObject(HashMap<String, PImage> localSprites, int state, float x, float y) {
         this.localSprites = localSprites;
         this.state = state;
     }
@@ -48,11 +48,11 @@ public abstract class DynamicObject {
         return this.vel;
     }
 
-    public void updateState(char state) {
+    public void updateState(int state) {
         this.state = state;
     }
 
-    public char getState() {
+    public int getState() {
         return state;
     }
 

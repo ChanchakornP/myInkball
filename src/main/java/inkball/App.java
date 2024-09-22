@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.*;
 
 import inkball.object.LineObject;
+import inkball.object.RectangleObject;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
@@ -37,6 +38,8 @@ public class App extends PApplet {
     private HashMap<String, PImage> sprites = new HashMap<>();
     public List<StaticObject> staticObj = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
+    public List<String> BallsInQueue = new ArrayList<>();
+    public int TotalScore;
 
     public void getSprite() {
         String[] local_sprites = new String[] {
@@ -69,21 +72,19 @@ public class App extends PApplet {
         }
     }
 
-    JSONArray level;
-    JSONObject incScore;
-    JSONObject punishScore;
+    JSONArray levels;
 
     public void getconfig() {
         JSONObject json;
         json = loadJSONObject(this.configPath);
-        level = json.getJSONArray("levels");
-        incScore = json.getJSONObject("score_increase_from_hole_capture");
+        levels = json.getJSONArray("levels");
+        JSONObject incScore = json.getJSONObject("score_increase_from_hole_capture");
         for (Object k : incScore.keys()) {
             String key = k.toString();
             int reward = incScore.getInt(key);
             Color.setReward(key, reward);
         }
-        punishScore = json.getJSONObject("score_decrease_from_wrong_hole");
+        JSONObject punishScore = json.getJSONObject("score_decrease_from_wrong_hole");
         for (Object k : punishScore.keys()) {
             String key = k.toString();
             int penalty = punishScore.getInt(key);
@@ -113,10 +114,30 @@ public class App extends PApplet {
                 localSprites.put(local_sprites[idx], result);
             }
             // obj = new Wall(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
-            obj = new Wall(localSprites, filename.charAt(filename.length() - 1), i * CELLSIZE,
+            int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
+            obj = new Wall(localSprites, state, i * CELLSIZE,
                     current_row * CELLSIZE + TOPBAR);
         } else if (filename.startsWith("hole")) {
-            obj = new Hole(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
+            String[] local_sprites = new String[] {
+                    "hole0",
+                    "hole1",
+                    "hole2",
+                    "hole3",
+                    "hole4",
+            };
+            HashMap<String, PImage> localSprites = new HashMap<>();
+
+            for (int idx = 0; idx < local_sprites.length; idx++) {
+                PImage result;
+                result = loadImage(
+                        this.getClass().getResource(local_sprites[idx] + ".png").getPath().toLowerCase(Locale.ROOT)
+                                .replace("%20", " "));
+                localSprites.put(local_sprites[idx], result);
+            }
+            int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
+            obj = new Hole(localSprites, state, i * CELLSIZE,
+                    current_row * CELLSIZE + TOPBAR);
+
         } else if (filename.equals("entrypoint")) {
             obj = new EntryPoint(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
         } else {
@@ -142,7 +163,7 @@ public class App extends PApplet {
                             .replace("%20", " "));
             localSprites.put(local_sprites[idx], result);
         }
-        Ball obj = new Ball(localSprites, ballNumber, i * CELLSIZE,
+        Ball obj = new Ball(localSprites, Character.getNumericValue(ballNumber), i * CELLSIZE,
                 current_row * CELLSIZE + TOPBAR);
         Balls.add(obj);
     }
@@ -172,6 +193,10 @@ public class App extends PApplet {
     }
 
     public void initializeBoard(String filename) {
+        board = new Tile[BOARD_HEIGHT][BOARD_WIDTH];
+        staticObj = new ArrayList<>();
+        Balls = new ArrayList<>();
+        lines = new ArrayList<>();
         try {
             File mytxt = new File(filename);
             Scanner sc = new Scanner(mytxt);
@@ -196,6 +221,7 @@ public class App extends PApplet {
             }
             sc.close();
         } catch (FileNotFoundException e) {
+            gamestop = true;
             System.out.println("An error occurred.");
         }
     }
@@ -224,7 +250,6 @@ public class App extends PApplet {
         frameRate(FPS);
         getSprite();
         getconfig();
-        initializeBoard("level1.txt");
         // See PApplet javadoc:
         // loadJSONObject(configPath)
         // the image is loaded from relative path: "src/main/resources/inkball/..."
@@ -297,14 +322,35 @@ public class App extends PApplet {
     /**
      * Draw all elements in the game by current frame.
      */
+    // boolean stageFinished;
+    int stage;
+    float incMod;
+    float decMod;
+
     @Override
     public void draw() {
+
         if (gamestop) {
 
         } else {
+            if (BallsInQueue.size() == 0) {
+                try {
+                    JSONObject stageInfo = levels.getJSONObject(stage);
+                    String layout = stageInfo.getString("layout");
+                    initializeBoard(layout);
+                    JSONArray buffer = stageInfo.getJSONArray("balls");
+                    for (int i = 0; i < buffer.size(); i++) {
+                        BallsInQueue.add(buffer.getString(i));
+                    }
+                    incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
+                    decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
+                    stage++;
+                } catch (RuntimeException e) {
+                    gamestop = true;
+                }
+            }
             gameContinue();
         }
-
     }
 
     private int startTime;
@@ -314,15 +360,18 @@ public class App extends PApplet {
         background(200);
         elapsedTime = millis() - startTime;
         String time = "Time: " + Integer.toString(elapsedTime / 1000);
-        textSize(30);
+        textSize(20);
         fill(0);
-        text(time, 400, App.TOPBAR - 10); // prints string at coordinates 150,
+        text(time, 450, App.TOPBAR - 10); // prints string at coordinates 150,
+        String score = "Score: " + Integer.toString(TotalScore);
+        text(score, 450, App.TOPBAR - 40); // prints string at coordinates 150,
     }
 
     public void gameContinue() {
         // ----------------------------------
         // display Board for current level:
         // ----------------------------------
+        timer();
         for (Tile[] row : board) {
             for (Tile tile : row) {
                 tile.draw(this);
@@ -358,7 +407,8 @@ public class App extends PApplet {
 
                 // Remove ball if it is captured by a hole
                 if (ball.getCaptured()) {
-                    // ballIterator.remove();
+                    calScore(ball, o);
+                    ballIterator.remove();
                 }
             }
         }
@@ -375,7 +425,20 @@ public class App extends PApplet {
         // ----------------------------------
         // ----------------------------------
         // display game end message
+    }
 
+    public int calScore(Ball ball, StaticObject hole) {
+        int ballState = ball.getState();
+        int holeState = hole.getState();
+        if (ballState == holeState) {
+            TotalScore += incMod * Color.values()[ballState].getReward();
+        } else {
+            TotalScore -= decMod * Color.values()[ballState].getPenalty();
+            if (TotalScore < 0) {
+                TotalScore = 0;
+            }
+        }
+        return 0;
     }
 
     public static void main(String[] args) {

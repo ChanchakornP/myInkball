@@ -10,7 +10,6 @@ public abstract class RectangleObject extends StaticObject {
     public float width, height;
     public float x1, x2, y1, y2;
     public HashMap<String, PImage> localSprites = new HashMap<>();
-    private char state;
 
     public abstract void interactWithBall(App app, Ball ball);
 
@@ -44,17 +43,8 @@ public abstract class RectangleObject extends StaticObject {
     }
 
     // for ball, it needs to store images
-    public RectangleObject(HashMap<String, PImage> localSprites, char state, float x, float y) {
+    public RectangleObject(HashMap<String, PImage> localSprites, int state, float x, float y) {
         setupLocalSprites(localSprites);
         this.state = state;
     }
-
-    public void updateState(char state) {
-        this.state = state;
-    }
-
-    public char getState() {
-        return state;
-    }
-
 }

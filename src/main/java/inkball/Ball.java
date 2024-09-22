@@ -36,9 +36,9 @@ public class Ball extends DynamicObject {
         super(objImg, x, y);
     }
 
-    public Ball(HashMap<String, PImage> localSprites, char state, float x, float y) {
+    public Ball(HashMap<String, PImage> localSprites, int state, float x, float y) {
         super(localSprites, state, x, y);
-        PImage objImage = localSprites.get("ball" + state);
+        PImage objImage = localSprites.get("ball" + String.valueOf(state));
         updateState(state);
         position[0] = x;
         position[1] = y;
@@ -101,7 +101,7 @@ public class Ball extends DynamicObject {
     }
 
     public void draw(App app) {
-        PImage objImgTmp = getLocalSprites().get("ball" + getState()).copy();
+        PImage objImgTmp = getLocalSprites().get("ball" + String.valueOf(getState())).copy();
         if (this.width < 28) {
             objImgTmp.resize((int) this.width, (int) this.height);
         }
