@@ -11,7 +11,6 @@ import java.io.*;
 import java.util.*;
 
 import inkball.object.LineObject;
-import inkball.object.RectangleObject;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
@@ -306,7 +305,7 @@ public class App extends PApplet {
     public void draw() {
 
         if (gamestop) {
-
+            text("*** PAUSED ***", 260, 40);
         } else {
             if (BallsInQueue.size() == 0 && Balls.size() == 0) {
                 try {
@@ -339,23 +338,61 @@ public class App extends PApplet {
     private int spawnCounter;
 
     public void timer() {
-        background(200);
         elapsedTime = millis() - prevStageTime;
         spawnCounter = millis() - spawnBufferTime;
-        int timeLeft = timeLimit - elapsedTime / 1000;
-        String time = "Time: " + Integer.toString(timeLeft);
+        int timeLeft;
         textSize(20);
         fill(0);
-        text(time, 450, App.TOPBAR - 10);
+
+        if (timeLimit > 0) {
+            timeLeft = timeLimit - elapsedTime / 1000;
+            String time = "Time: " + Integer.toString(timeLeft);
+            text(time, 450, App.TOPBAR - 10);
+        } else {
+            timeLeft = -1;
+            String time = "Time: ";
+            text(time, 450, App.TOPBAR - 10);
+        }
+    }
+
+    public void score() {
         String score = "Score: " + Integer.toString(TotalScore);
         text(score, 450, App.TOPBAR - 40);
+    }
+
+    int loadingX = 40;
+    int loadingY = 15;
+    int loadingWidth = 175;
+    int loadingHeight = 35;
+    int loadingPad = 3;
+
+    public void drawLoadingBalls() {
+        rect(loadingX, loadingY, loadingWidth, loadingHeight);
+        String formattedString = String.format("%.01f", (float) (spawnInterval - (float) spawnCounter / 1000));
+        text(formattedString, loadingX + loadingWidth + 5, loadingY + loadingHeight / 2);
+        int counter = 0;
+        for (String s : BallsInQueue) {
+            int colorCode = Color.valueOf(s.toUpperCase()).ordinal();
+            String filename = "ball" + String.valueOf(colorCode);
+            PImage ball = sprites.get(filename);
+            image(ball, loadingX + loadingPad + (35 * counter), loadingY + loadingPad);
+            counter++;
+            if (counter == 5) {
+                break;
+            }
+        }
     }
 
     public void gameContinue() {
         // ----------------------------------
         // display Board for current level:
         // ----------------------------------
+        background(200); // clear previous info
+
         timer();
+        score();
+        drawLoadingBalls();
+
         for (Tile[] row : board) {
             for (Tile tile : row) {
                 tile.draw(this);

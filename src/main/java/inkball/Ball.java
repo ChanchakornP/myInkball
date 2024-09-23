@@ -4,6 +4,7 @@ import inkball.object.DynamicObject;
 import processing.core.PImage;
 import processing.core.PVector;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Ball extends DynamicObject {
     private boolean captured = false;
@@ -34,6 +35,11 @@ public class Ball extends DynamicObject {
 
     public Ball(PImage objImg, float x, float y) {
         super(objImg, x, y);
+        Random rand = new Random();
+        // random vel -2 or 2
+        int randVelX = rand.nextInt(2) * 4 - 2;
+        int randVelY = rand.nextInt(2) * 4 - 2;
+        setVel(new float[] { randVelX, randVelY });
     }
 
     public Ball(HashMap<String, PImage> localSprites, int state, float x, float y) {
@@ -44,6 +50,10 @@ public class Ball extends DynamicObject {
         position[1] = y;
         this.width = objImage.width;
         this.height = objImage.height;
+        Random rand = new Random();
+        int randVelX = rand.nextInt(2) * 4 - 2;
+        int randVelY = rand.nextInt(2) * 4 - 2;
+        setVel(new float[] { randVelX, randVelY });
     }
 
     public float[] getCenter() {
