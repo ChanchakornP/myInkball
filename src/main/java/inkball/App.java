@@ -231,6 +231,7 @@ public class App extends PApplet {
      * Receive key pressed signal from the keyboard.
      */
     boolean gamestop;
+    boolean controlPressed;
 
     @Override
     public void keyPressed(KeyEvent event) {
@@ -238,6 +239,8 @@ public class App extends PApplet {
             gamestop = ((gamestop || true) && !(gamestop && true)); // toggle
         } else if (event.getKey() == 'r') {
             setup();
+        } else if (event.getKeyCode() == KeyEvent.CTRL) {
+            controlPressed = true;
         }
     }
 
@@ -245,8 +248,10 @@ public class App extends PApplet {
      * Receive key released signal from the keyboard.
      */
     @Override
-    public void keyReleased() {
-
+    public void keyReleased(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.CTRL) {
+            controlPressed = false;
+        }
     }
 
     public List<LineObject> lines = new ArrayList<>();
@@ -258,18 +263,34 @@ public class App extends PApplet {
             currentLine = new LineObject();
             lines.add(currentLine);
         } else if (e.getButton() == App.RIGHT) {
-
+            // remove line when right click
+            Iterator<LineObject> linesIterator = lines.iterator();
+            while (linesIterator.hasNext()) {
+                LineObject line = linesIterator.next();
+                if (line.intersect(e.getX(), e.getY())) {
+                    linesIterator.remove();
+                }
+            }
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (e.getButton() == App.LEFT) {
+        if (e.getButton() == App.LEFT && !controlPressed) {
             int x = e.getX();
             int y = e.getY();
             currentLine.addPoints(x, y);
+        } else if (e.getButton() == App.LEFT && controlPressed) {
+            // remove line when control and left click
+            Iterator<LineObject> linesIterator = lines.iterator();
+            while (linesIterator.hasNext()) {
+                LineObject line = linesIterator.next();
+                if (line.intersect(e.getX(), e.getY())) {
+                    linesIterator.remove();
+                }
+            }
         } else if (e.getButton() == App.RIGHT) {
-            // remove line when lefted click
+            // remove line when right click
             Iterator<LineObject> linesIterator = lines.iterator();
             while (linesIterator.hasNext()) {
                 LineObject line = linesIterator.next();
@@ -297,7 +318,7 @@ public class App extends PApplet {
         initializeBoard(layout);
         JSONArray buffer = stageInfo.getJSONArray("balls");
         for (int i = 0; i < buffer.size(); i++) {
-            BallsInQueue.add(buffer.getString(i));
+            // BallsInQueue.add(buffer.getString(i));
         }
         incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
         decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
@@ -318,8 +339,8 @@ public class App extends PApplet {
         noStroke();
 
         drawLoadingBalls();
-        score();
         timer();
+        score();
 
         for (Tile[] row : board) {
             for (Tile tile : row) {
@@ -329,8 +350,14 @@ public class App extends PApplet {
         for (StaticObject o : staticObj) {
             o.draw(this);
         }
+
         for (Ball o : Balls) {
             o.draw(this);
+        }
+
+        if (timeLeft == 0 && BallsInQueue.size() != 0 && Balls.size() != 0) {
+            text("*** TIME’S UP ***", 260, 40);
+            return;
         }
 
         for (LineObject line : lines) {
@@ -347,7 +374,11 @@ public class App extends PApplet {
             // if the stage is end.
             stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0 && stage <= levels.size();
             if (stageEnd) {
-                endStageDisplay();
+                if (stage < levels.size()) {
+                    endStageDisplay();
+                } else {
+                    text("=== ENDED ===", 260, 40);
+                }
             } else {
                 gameContinue();
             }
