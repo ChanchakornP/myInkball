@@ -79,11 +79,11 @@ public class Hole extends RectangleObject {
                                 (float) Math.sqrt(8));
                 // PVector _newballVal = PVector.add(ball.getVelocityVec(), gravityVector);
                 ball.setVel(_newballVal);
-                if (ballSize < 10) {
+                if (ballSize < 12) {
                         ball.setCaptured(true);
                 }
-                if (ballSize > 32)
-                        ballSize = 32;
+                if (ballSize > 24)
+                        ballSize = 24;
                 ball.resize(ballSize, ballSize);
         }
 }

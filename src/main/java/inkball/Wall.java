@@ -98,6 +98,59 @@ public class Wall extends RectangleObject {
                                 collideBottomRight;
         }
 
+        public boolean intersectTopLeft(Ball ball) {
+                float[] ballCenter = ball.getCenter();
+                float radius = ball.getRadius();
+                float[] vel = ball.getVelocity();
+                float[] topLeftNextLocation = new float[] { ballCenter[0] - (float) (radius /
+                                Math.sqrt(2)) + vel[0],
+                                ballCenter[1] - (float) (radius / Math.sqrt(2)) + vel[1] };
+                boolean collideTopLeft = topLeftNextLocation[0] >= x1 &&
+                                topLeftNextLocation[0] <= x2 &&
+                                topLeftNextLocation[1] >= y1 && topLeftNextLocation[1] <= y2;
+                return collideTopLeft;
+        }
+
+        public boolean intersectTopRight(Ball ball) {
+                float[] ballCenter = ball.getCenter();
+                float radius = ball.getRadius();
+                float[] vel = ball.getVelocity();
+                float[] topRightNextLocation = new float[] { ballCenter[0] + (float) (radius
+                                / Math.sqrt(2)) + vel[0],
+                                ballCenter[1] - (float) (radius / Math.sqrt(2)) + vel[1] };
+                boolean collideTopRight = topRightNextLocation[0] >= x1 &&
+                                topRightNextLocation[0] <= x2 &&
+                                topRightNextLocation[1] >= y1 && topRightNextLocation[1] <= y2;
+                return collideTopRight;
+        }
+
+        public boolean intersectBottomLeft(Ball ball) {
+                float[] ballCenter = ball.getCenter();
+                float radius = ball.getRadius();
+                float[] vel = ball.getVelocity();
+                float[] bottomLeftNextLocation = new float[] { ballCenter[0] - (float) (radius / Math.sqrt(2)) + vel[0],
+                                ballCenter[1] + (float) (radius / Math.sqrt(2)) + vel[1] };
+                boolean collideBottomLeft = bottomLeftNextLocation[0] >= x1 &&
+                                bottomLeftNextLocation[0] <= x2 &&
+                                bottomLeftNextLocation[1] >= y1 && bottomLeftNextLocation[1] <= y2;
+                return collideBottomLeft;
+        }
+
+        public boolean intersectBottomRight(Ball ball) {
+                float[] ballCenter = ball.getCenter();
+                float radius = ball.getRadius();
+                float[] vel = ball.getVelocity();
+                float[] bottomRightNextLocation = new float[] {
+                                ballCenter[0] + (float) (radius / Math.sqrt(2)) + vel[0],
+                                ballCenter[1] + (float) (radius / Math.sqrt(2)) + vel[1] };
+
+                boolean collideBottomRight = bottomRightNextLocation[0] >= x1 &&
+                                bottomRightNextLocation[0] <= x2 &&
+                                bottomRightNextLocation[1] >= y1 && bottomRightNextLocation[1] <= y2;
+                return collideBottomRight;
+
+        }
+
         @Override
         public boolean intersect(Ball ball) {
                 float[] ballCenter = ball.getCenter();
@@ -156,9 +209,38 @@ public class Wall extends RectangleObject {
                         // find the closest line
                         ball.reflect(normVec);
                 }
-
-                if (intersectEdge(ball)) {
-                        ball.inverseVel();
+                if (intersectTopLeft(ball)) {
+                        float[] ballVel = ball.getVelocity();
+                        if (ballVel[0] > 0 && ballVel[1] > 0) {
+                                ball.inverseVel();
+                        } else {
+                                PVector normVec = new PVector(-1, -1).normalize();
+                                ball.reflect(normVec);
+                        }
+                } else if (intersectTopRight(ball)) {
+                        float[] ballVel = ball.getVelocity();
+                        if (ballVel[0] < 0 && ballVel[1] > 0) {
+                                ball.inverseVel();
+                        } else {
+                                PVector normVec = new PVector(1, -1).normalize();
+                                ball.reflect(normVec);
+                        }
+                } else if (intersectBottomLeft(ball)) {
+                        float[] ballVel = ball.getVelocity();
+                        if (ballVel[0] > 0 && ballVel[1] < 0) {
+                                ball.inverseVel();
+                        } else {
+                                PVector normVec = new PVector(-1, 1).normalize();
+                                ball.reflect(normVec);
+                        }
+                } else if (intersectBottomRight(ball)) {
+                        float[] ballVel = ball.getVelocity();
+                        if (ballVel[0] < 0 && ballVel[1] < 0) {
+                                ball.inverseVel();
+                        } else {
+                                PVector normVec = new PVector(1, 1).normalize();
+                                ball.reflect(normVec);
+                        }
                 }
 
                 if (getState() != Color.GREY.ordinal()) {

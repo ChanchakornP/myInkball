@@ -34,7 +34,7 @@ public class App extends PApplet {
     public String configPath;
 
     public static Random random = new Random();
-    private HashMap<String, PImage> sprites = new HashMap<>();
+    public HashMap<String, PImage> sprites = new HashMap<>();
     public List<StaticObject> staticObj = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
     public Queue<String> BallsInQueue = new LinkedList<>();
@@ -73,9 +73,9 @@ public class App extends PApplet {
 
     JSONArray levels;
 
-    public void getconfig() {
+    public void getconfig(String configPath) {
         JSONObject json;
-        json = loadJSONObject(this.configPath);
+        json = loadJSONObject(configPath);
         levels = json.getJSONArray("levels");
         JSONObject incScore = json.getJSONObject("score_increase_from_hole_capture");
         for (Object k : incScore.keys()) {
@@ -91,7 +91,7 @@ public class App extends PApplet {
         }
     }
 
-    private HashMap<String, PImage> loadSprites(String[] spriteNames) {
+    public HashMap<String, PImage> loadSprites(String[] spriteNames) {
         HashMap<String, PImage> sprites = new HashMap<>();
         for (String spriteName : spriteNames) {
             PImage result = loadImage(
@@ -219,9 +219,12 @@ public class App extends PApplet {
      */
     @Override
     public void setup() {
+        stage = 0;
         frameRate(FPS);
         getSprite();
-        getconfig();
+        getconfig(this.configPath);
+        updateStageInfo();
+        strokeWeight(10); // thickness 10 units
         // See PApplet javadoc:
         // loadJSONObject(configPath)
         // the image is loaded from relative path: "src/main/resources/inkball/..."
@@ -243,8 +246,10 @@ public class App extends PApplet {
 
     @Override
     public void keyPressed(KeyEvent event) {
-        if (event.getKey() == 'r') {
-            gamestop = ((gamestop || true) && !(gamestop && true));
+        if (event.getKey() == ' ') {
+            gamestop = ((gamestop || true) && !(gamestop && true)); // toggle
+        } else if (event.getKey() == 'r') {
+            setup();
         }
     }
 
@@ -267,8 +272,6 @@ public class App extends PApplet {
         } else if (e.getButton() == App.RIGHT) {
 
         }
-
-        // create a new player-drawn line object
     }
 
     @Override
@@ -277,13 +280,16 @@ public class App extends PApplet {
             int x = e.getX();
             int y = e.getY();
             currentLine.addPoints(x, y);
-        } else {
-
+        } else if (e.getButton() == App.RIGHT) {
+            // remove line when lefted click
+            Iterator<LineObject> linesIterator = lines.iterator();
+            while (linesIterator.hasNext()) {
+                LineObject line = linesIterator.next();
+                if (line.intersect(e.getX(), e.getY())) {
+                    linesIterator.remove();
+                }
+            }
         }
-        // add line segments to player-drawn line object if left mouse button is held
-
-        // remove player-drawn line object if right mouse button is held
-        // and mouse position collides with the line
     }
 
     @Override
@@ -291,62 +297,121 @@ public class App extends PApplet {
         currentLine = new LineObject();
     }
 
-    /**
-     * Draw all elements in the game by current frame.
-     */
-    // boolean stageFinished;
     int stage;
     float incMod;
     float decMod;
     int timeLimit;
     int spawnInterval;
 
+    public void updateStageInfo() {
+        JSONObject stageInfo = levels.getJSONObject(stage);
+        String layout = stageInfo.getString("layout");
+        initializeBoard(layout);
+        JSONArray buffer = stageInfo.getJSONArray("balls");
+        for (int i = 0; i < buffer.size(); i++) {
+            // BallsInQueue.add(buffer.getString(i));
+        }
+        incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
+        decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
+        spawnInterval = stageInfo.getInt("spawn_interval");
+        timeLimit = stageInfo.getInt("time");
+        frameCount = 0;
+        spawnCounter = spawnInterval;
+        stage++;
+        stageEnd = false;
+    }
+
     @Override
     public void draw() {
+        background(200); // clear previous info
+        score();
+        timer();
+        drawLoadingBalls();
+
+        for (Tile[] row : board) {
+            for (Tile tile : row) {
+                tile.draw(this);
+            }
+        }
+        for (StaticObject o : staticObj) {
+            o.draw(this);
+        }
+        for (Ball o : Balls) {
+            o.draw(this);
+        }
+
+        for (LineObject line : lines) {
+            line.draw(this);
+        }
 
         if (gamestop) {
+            // pause
             text("*** PAUSED ***", 260, 40);
         } else {
-            if (BallsInQueue.size() == 0 && Balls.size() == 0) {
-                try {
-                    JSONObject stageInfo = levels.getJSONObject(stage);
-                    String layout = stageInfo.getString("layout");
-                    initializeBoard(layout);
-                    JSONArray buffer = stageInfo.getJSONArray("balls");
-                    for (int i = 0; i < buffer.size(); i++) {
-                        BallsInQueue.add(buffer.getString(i));
-                    }
-                    incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
-                    decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
-                    spawnInterval = stageInfo.getInt("spawn_interval");
-                    timeLimit = stageInfo.getInt("time");
-                    prevStageTime = millis();
-                    spawnBufferTime = millis();
-                    stage++;
-                } catch (RuntimeException e) {
-                    gamestop = true;
-                }
+            // run the game
+            // if the stage is end.
+            stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0 && stage <= levels.size();
+            if (stageEnd) {
+                endStageDisplay();
+            } else {
+                gameContinue();
             }
-            gameContinue();
         }
     }
 
-    private int elapsedTime;
-    private int prevStageTime;
+    private int[] locMovingWall1 = new int[] { 0, 0 };
+    private int[] locMovingWall2 = new int[] { 17, 17 };
 
-    private int spawnBufferTime;
-    private int spawnCounter;
+    public void endStageDisplay() {
+        // create the yellow wall and overwrite on the board instead.
+        timeLeft--;
+        TotalScore++;
+
+        // TODO, display moving yellow wall.
+        String filename = "wall" + String.valueOf(Color.YELLOW.ordinal());
+        PImage wall = sprites.get(filename);
+        movingWall(wall);
+
+        if (timeLeft < 0) {
+            updateStageInfo();
+        }
+    }
+
+    public void movingWall(PImage wall) {
+        image(wall, locMovingWall1[0] * CELLSIZE, locMovingWall1[1] * CELLSIZE + TOPBAR);
+        image(wall, locMovingWall2[0] * CELLSIZE, locMovingWall2[1] * CELLSIZE + TOPBAR);
+        movingWallState(locMovingWall1);
+        movingWallState(locMovingWall2);
+    }
+
+    public void movingWallState(int[] locMovingWall) {
+        int x = locMovingWall[0];
+        int y = locMovingWall[1];
+        if (y == 0 & x < 17) {
+            locMovingWall[0] += 1;
+        } else if (x == 17 && y < 17) {
+            locMovingWall[1] += 1;
+        } else if (y == 17 && x <= 17 && x > 0) {
+            locMovingWall[0] -= 1;
+        } else if (x == 0 && y <= 17) {
+            locMovingWall[1] -= 1;
+        }
+    }
+
+    private float spawnCounter;
+    private float timeLeft;
+    private int frameCount;
+    private int frameOffset;
+    private boolean stageEnd;
 
     public void timer() {
-        elapsedTime = millis() - prevStageTime;
-        spawnCounter = millis() - spawnBufferTime;
-        int timeLeft;
         textSize(20);
         fill(0);
-
         if (timeLimit > 0) {
-            timeLeft = timeLimit - elapsedTime / 1000;
-            String time = "Time: " + Integer.toString(timeLeft);
+            if (!stageEnd) {
+                timeLeft = timeLimit - (frameCount / FPS);
+            }
+            String time = "Time: " + String.format("%.0f", timeLeft);
             text(time, 450, App.TOPBAR - 10);
         } else {
             timeLeft = -1;
@@ -355,20 +420,20 @@ public class App extends PApplet {
         }
     }
 
-    public void score() {
-        String score = "Score: " + Integer.toString(TotalScore);
-        text(score, 450, App.TOPBAR - 40);
-    }
-
-    int loadingX = 40;
-    int loadingY = 15;
-    int loadingWidth = 175;
-    int loadingHeight = 35;
-    int loadingPad = 3;
+    private int loadingX = 40;
+    private int loadingY = 15;
+    private int loadingWidth = 175;
+    private int loadingHeight = 35;
+    private int loadingPad = 3;
 
     public void drawLoadingBalls() {
         rect(loadingX, loadingY, loadingWidth, loadingHeight);
-        String formattedString = String.format("%.01f", (float) (spawnInterval - (float) spawnCounter / 1000));
+        String formattedString;
+        if (spawnCounter > 0) {
+            formattedString = String.format("%.01f", spawnCounter);
+        } else {
+            formattedString = "";
+        }
         text(formattedString, loadingX + loadingWidth + 5, loadingY + loadingHeight / 2);
         int counter = 0;
         for (String s : BallsInQueue) {
@@ -387,27 +452,8 @@ public class App extends PApplet {
         // ----------------------------------
         // display Board for current level:
         // ----------------------------------
-        background(200); // clear previous info
-
-        timer();
-        score();
-        drawLoadingBalls();
-
-        for (Tile[] row : board) {
-            for (Tile tile : row) {
-                tile.draw(this);
-            }
-        }
-        for (StaticObject o : staticObj) {
-            o.draw(this);
-        }
-        for (Ball o : Balls) {
-            o.draw(this);
-        }
-
-        for (LineObject line : lines) {
-            line.draw(this);
-        }
+        frameCount++;
+        spawnCounter = spawnInterval - (float) (frameCount - frameOffset) / FPS;
 
         for (Ball ball : Balls) {
             Iterator<LineObject> linesIterator = lines.iterator();
@@ -435,7 +481,7 @@ public class App extends PApplet {
         }
 
         // inefficient here. Ignore it for now.
-        if (BallsInQueue.size() > 0 && spawnCounter >= spawnInterval * 1000) {
+        if (BallsInQueue.size() > 0 && spawnCounter == 0) {
             List<StaticObject> spawners = new ArrayList<>();
             for (StaticObject o : staticObj) {
                 if (o.getObjName().equals("EntryPoint")) {
@@ -453,17 +499,13 @@ public class App extends PApplet {
             Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
                     spawnPos[0], spawnPos[1]);
             Balls.add(obj);
-            spawnBufferTime = millis();
-            spawnCounter = millis() - spawnBufferTime;
+            frameOffset = frameCount;
+            spawnCounter = spawnInterval;
         }
 
         for (Ball ball : Balls) {
             ball.move();
         }
-
-        // ----------------------------------
-        // display score
-        // ----------------------------------
         // TODO
 
         // ----------------------------------
@@ -471,7 +513,12 @@ public class App extends PApplet {
         // display game end message
     }
 
-    public int calScore(Ball ball, StaticObject hole) {
+    public void score() {
+        String score = "Score: " + Integer.toString(TotalScore);
+        text(score, 450, App.TOPBAR - 40);
+    }
+
+    public void calScore(Ball ball, StaticObject hole) {
         int ballState = ball.getState();
         int holeState = hole.getState();
         if (ballState == holeState) {
@@ -482,7 +529,6 @@ public class App extends PApplet {
                 TotalScore = 0;
             }
         }
-        return 0;
     }
 
     public static void main(String[] args) {

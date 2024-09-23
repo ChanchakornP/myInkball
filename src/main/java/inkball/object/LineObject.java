@@ -80,6 +80,19 @@ public class LineObject extends StaticObject {
         return false;
     }
 
+    public boolean intersect(float x, float y) {
+        for (PVector[] line : lines) {
+            PVector point = new PVector(x, y);
+            float dist1 = PVector.sub(point, line[0]).mag();
+            float dist2 = PVector.sub(point, line[1]).mag();
+            float distLine = PVector.sub(line[0], line[1]).mag();
+            if (dist1 + dist2 < distLine + 4) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean lineIntersect(Ball ball, PVector[] lineVecs) {
         PVector ballPos = ball.nextFramePositionVec();
         float dist1 = PVector.sub(ballPos, lineVecs[0]).mag();
