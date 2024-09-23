@@ -3,6 +3,10 @@ package inkball;
 import processing.core.PApplet;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.*;
+import processing.core.PImage;
+import inkball.object.StaticObject;
+import inkball.state.Color;
 
 public class SampleTest {
 
@@ -217,8 +221,100 @@ public class SampleTest {
     // Create score calculation logic
     @Test
     public void testUpdatingScore() {
+        App app = new App();
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+        Ball greyBall, orangeBall, blueBall, greenBall, yellowBall;
+        StaticObject greyHole, orangeHole, blueHole, greenHole, yellowHole;
+        HashMap<String, PImage> ballSpriteMap = app.sprites;
+
+        greyBall = new Ball(ballSpriteMap, Color.GREY.ordinal(), 0, 0);
+        orangeBall = new Ball(ballSpriteMap, Color.ORANGE.ordinal(), 0, 0);
+        blueBall = new Ball(ballSpriteMap, Color.BLUE.ordinal(), 0, 0);
+        greenBall = new Ball(ballSpriteMap, Color.GREEN.ordinal(), 0, 0);
+        yellowBall = new Ball(ballSpriteMap, Color.YELLOW.ordinal(), 0, 0);
+
+        HashMap<String, PImage> holeSpriteMap = app.sprites;
+        greyHole = new Hole(holeSpriteMap, Color.GREY.ordinal(), 0, 0);
+        orangeHole = new Hole(holeSpriteMap, Color.ORANGE.ordinal(), 0, 0);
+        blueHole = new Hole(holeSpriteMap, Color.BLUE.ordinal(), 0, 0);
+        greenHole = new Hole(holeSpriteMap, Color.GREEN.ordinal(), 0, 0);
+        yellowHole = new Hole(holeSpriteMap, Color.YELLOW.ordinal(), 0, 0);
+
+        // Matched, increase the score
+        app.calScore(greyBall, greyHole);
+        assertEquals(app.TotalScore, 70);
+        app.calScore(orangeBall, orangeHole);
+        assertEquals(app.TotalScore, 120);
+        app.calScore(blueBall, blueHole);
+        assertEquals(app.TotalScore, 170);
+        app.calScore(greenBall, greenHole);
+        assertEquals(app.TotalScore, 220);
+        app.calScore(yellowBall, yellowHole);
+        assertEquals(app.TotalScore, 320);
+
+        // unmatched, decrease the score
+        app.calScore(greyBall, orangeHole);
+        assertEquals(app.TotalScore, 320);
+        app.calScore(greyBall, blueHole);
+        assertEquals(app.TotalScore, 320);
+        app.calScore(greyBall, greenHole);
+        assertEquals(app.TotalScore, 320);
+        app.calScore(greyBall, yellowHole);
+        assertEquals(app.TotalScore, 320);
+
+        // unmatched, decrease the score
+        app.calScore(orangeBall, yellowHole);
+        assertEquals(app.TotalScore, 295);
+        app.calScore(orangeBall, greyHole);
+        assertEquals(app.TotalScore, 270);
+        app.calScore(orangeBall, blueHole);
+        assertEquals(app.TotalScore, 245);
+        app.calScore(orangeBall, greenHole);
+        assertEquals(app.TotalScore, 220);
+
+        // unmatched, decrease the score
+        app.calScore(blueBall, yellowHole);
+        assertEquals(app.TotalScore, 195);
+        app.calScore(blueBall, greyHole);
+        assertEquals(app.TotalScore, 170);
+        app.calScore(blueBall, orangeHole);
+        assertEquals(app.TotalScore, 145);
+        app.calScore(blueBall, greenHole);
+        assertEquals(app.TotalScore, 120);
+
+        // unmatched, decrease the score
+        app.calScore(greenBall, yellowHole);
+        assertEquals(app.TotalScore, 95);
+        app.calScore(greenBall, greyHole);
+        assertEquals(app.TotalScore, 70);
+        app.calScore(greenBall, blueHole);
+        assertEquals(app.TotalScore, 45);
+        app.calScore(greenBall, orangeHole);
+        assertEquals(app.TotalScore, 20);
+
+        // add more score
+        app.calScore(yellowBall, yellowHole);
+        assertEquals(app.TotalScore, 120);
+        app.calScore(yellowBall, yellowHole);
+        assertEquals(app.TotalScore, 220);
+        app.calScore(yellowBall, yellowHole);
+        assertEquals(app.TotalScore, 320);
+
+        // unmatched, decrease the score
+        app.calScore(yellowBall, greyHole);
+        assertEquals(app.TotalScore, 220);
+        app.calScore(yellowBall, blueHole);
+        assertEquals(app.TotalScore, 120);
+        app.calScore(yellowBall, greenHole);
+        assertEquals(app.TotalScore, 20);
+        app.calScore(yellowBall, orangeHole);
+        assertEquals(app.TotalScore, 0); // Cannot below than zero
     }
 
+    // test lineIntersect
+    // test lineBouncing
 }
 
 // gradle run Run the program
