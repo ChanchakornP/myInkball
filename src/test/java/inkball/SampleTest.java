@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import processing.core.PImage;
+import inkball.object.LineObject;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
@@ -314,6 +315,67 @@ public class SampleTest {
     }
 
     // test lineIntersect
+    @Test
+    public void testBallLineIntersect() {
+        App app = new App();
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+        Ball ball;
+        float[] ballVel;
+        LineObject testedLine;
+        // ********************************************** //
+        // test horizontal line
+        testedLine = new LineObject();
+        for (int i = 0; i < 100; i++) {
+            testedLine.addPoints(i, 32);
+        }
+        ball = new Ball(app.sprites.get("ball0"), 50, 12);
+        ballVel = new float[] { 0, 0 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), false);
+
+        ball = new Ball(app.sprites.get("ball0"), 50, 12);
+        ballVel = new float[] { 0, 1 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), true);
+        // ********************************************** //
+
+        // ********************************************** //
+        // test verticalLine line
+        testedLine = new LineObject();
+        for (int i = 0; i < 100; i++) {
+            testedLine.addPoints(32, i);
+        }
+        ball = new Ball(app.sprites.get("ball0"), 12, 50);
+        ballVel = new float[] { 0, 0 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), false);
+
+        ball = new Ball(app.sprites.get("ball0"), 12, 50);
+        ballVel = new float[] { 1, 0 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), true);
+        // ********************************************** //
+
+        // ********************************************** //
+        // test diagonal line
+        testedLine = new LineObject();
+        for (int i = 0; i < 100; i++) {
+            testedLine.addPoints(i, 100 - i);
+        }
+        ball = new Ball(app.sprites.get("ball0"), 32, 32);
+        ballVel = new float[] { 0, 0 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), false);
+
+        ball = new Ball(app.sprites.get("ball0"), 32, 32);
+        ballVel = new float[] { 1, 1 };
+        ball.setVel(ballVel);
+        assertEquals(testedLine.intersect(ball), true);
+        // ********************************************** //
+
+    }
     // test lineBouncing
 }
 
