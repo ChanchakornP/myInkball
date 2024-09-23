@@ -74,10 +74,10 @@ public class Hole extends RectangleObject {
                 PVector gravityVector = new PVector(center[0] - ballCenter[0], center[1] - ballCenter[1]);
                 int ballSize = (int) gravityVector.mag() + 1;
                 gravityVector = PVector.mult(gravityVector, (float) 0.005);
-                PVector _newballVal = PVector.mult(PVector.add(ball.getVelocityVec(),
-                                gravityVector).normalize(),
-                                (float) Math.sqrt(8));
-                // PVector _newballVal = PVector.add(ball.getVelocityVec(), gravityVector);
+                // PVector _newballVal = PVector.mult(PVector.add(ball.getVelocityVec(),
+                // gravityVector).normalize(),
+                // (float) Math.sqrt(8));
+                PVector _newballVal = PVector.add(ball.getVelocityVec(), gravityVector);
                 ball.setVel(_newballVal);
                 if (ballSize < 12) {
                         ball.setCaptured(true);

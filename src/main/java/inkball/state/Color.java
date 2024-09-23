@@ -54,4 +54,11 @@ public enum Color {
             YELLOW.penalty = penalty;
         }
     }
+
+    public static String getColorName(int idx) {
+        if (idx >= 0 && idx < Color.values().length) {
+            return Color.values()[idx].name(); // Return the name of the enum constant
+        }
+        return null;
+    }
 }

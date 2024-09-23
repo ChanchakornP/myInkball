@@ -38,6 +38,7 @@ public class App extends PApplet {
     public List<StaticObject> staticObj = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
     public Queue<String> BallsInQueue = new LinkedList<>();
+    private int BallsInQueuePadding = 35;
     public int TotalScore;
 
     public void getSprite() {
@@ -224,19 +225,6 @@ public class App extends PApplet {
         getSprite();
         getconfig(this.configPath);
         updateStageInfo();
-        strokeWeight(10); // thickness 10 units
-        // See PApplet javadoc:
-        // loadJSONObject(configPath)
-        // the image is loaded from relative path: "src/main/resources/inkball/..."
-        /*
-         * try {
-         * result =
-         * loadImage(URLDecoder.decode(this.getClass().getResource(filename+".png").
-         * getPath(), StandardCharsets.UTF_8.name()));
-         * } catch (UnsupportedEncodingException e) {
-         * throw new RuntimeException(e);
-         * }
-         */
     }
 
     /**
@@ -309,7 +297,7 @@ public class App extends PApplet {
         initializeBoard(layout);
         JSONArray buffer = stageInfo.getJSONArray("balls");
         for (int i = 0; i < buffer.size(); i++) {
-            // BallsInQueue.add(buffer.getString(i));
+            BallsInQueue.add(buffer.getString(i));
         }
         incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
         decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
@@ -318,15 +306,20 @@ public class App extends PApplet {
         frameCount = 0;
         spawnCounter = spawnInterval;
         stage++;
+        frameCount = 0;
+        frameOffset = 0;
         stageEnd = false;
     }
 
     @Override
     public void draw() {
         background(200); // clear previous info
+        strokeWeight(0);
+        noStroke();
+
+        drawLoadingBalls();
         score();
         timer();
-        drawLoadingBalls();
 
         for (Tile[] row : board) {
             for (Tile tile : row) {
@@ -341,6 +334,8 @@ public class App extends PApplet {
         }
 
         for (LineObject line : lines) {
+            stroke(0);
+            strokeWeight(10);
             line.draw(this);
         }
 
@@ -367,7 +362,6 @@ public class App extends PApplet {
         timeLeft--;
         TotalScore++;
 
-        // TODO, display moving yellow wall.
         String filename = "wall" + String.valueOf(Color.YELLOW.ordinal());
         PImage wall = sprites.get(filename);
         movingWall(wall);
@@ -426,26 +420,38 @@ public class App extends PApplet {
     private int loadingHeight = 35;
     private int loadingPad = 3;
 
+    private int slideCounter = 0;
+
     public void drawLoadingBalls() {
         rect(loadingX, loadingY, loadingWidth, loadingHeight);
+        int counter = 0;
+        // draw balls in the queue
+        for (String s : BallsInQueue) {
+            int colorCode = Color.valueOf(s.toUpperCase()).ordinal();
+            String filename = "ball" + String.valueOf(colorCode);
+            PImage ball = sprites.get(filename);
+            image(ball, loadingX + loadingPad + (BallsInQueuePadding * counter) + slideCounter, loadingY + loadingPad);
+            counter++;
+            if (counter == 5) {
+                break;
+            }
+        }
+        fill(200);
+        rect(loadingX + loadingWidth, loadingY, loadingX + loadingWidth + 30, loadingHeight, 0);
+
+        // draw spawning time
         String formattedString;
         if (spawnCounter > 0) {
             formattedString = String.format("%.01f", spawnCounter);
         } else {
             formattedString = "";
         }
-        text(formattedString, loadingX + loadingWidth + 5, loadingY + loadingHeight / 2);
-        int counter = 0;
-        for (String s : BallsInQueue) {
-            int colorCode = Color.valueOf(s.toUpperCase()).ordinal();
-            String filename = "ball" + String.valueOf(colorCode);
-            PImage ball = sprites.get(filename);
-            image(ball, loadingX + loadingPad + (35 * counter), loadingY + loadingPad);
-            counter++;
-            if (counter == 5) {
-                break;
-            }
+        if (slideCounter > 0) {
+            slideCounter--;
         }
+        fill(0);
+        text(formattedString, loadingX + loadingWidth + 5, loadingY + loadingHeight / 2);
+
     }
 
     public void gameContinue() {
@@ -481,10 +487,11 @@ public class App extends PApplet {
         }
 
         // inefficient here. Ignore it for now.
-        if (BallsInQueue.size() > 0 && spawnCounter == 0) {
+        if (BallsInQueue.size() > 0 && spawnCounter <= 0) {
             List<StaticObject> spawners = new ArrayList<>();
             for (StaticObject o : staticObj) {
                 if (o.getObjName().equals("EntryPoint")) {
+                    slideCounter = BallsInQueuePadding;
                     spawners.add(o);
                 }
             }
@@ -523,11 +530,16 @@ public class App extends PApplet {
         int holeState = hole.getState();
         if (ballState == holeState) {
             TotalScore += incMod * Color.values()[ballState].getReward();
+        } else if (holeState == Color.GREY.ordinal()) {
+            TotalScore += incMod * Color.values()[ballState].getReward();
+        } else if (ballState == Color.GREY.ordinal()) {
+            TotalScore += incMod * Color.values()[ballState].getReward();
         } else {
             TotalScore -= decMod * Color.values()[ballState].getPenalty();
             if (TotalScore < 0) {
                 TotalScore = 0;
             }
+            BallsInQueue.add(Color.getColorName(ballState));
         }
     }
 
