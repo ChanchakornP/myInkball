@@ -29,13 +29,13 @@ public class App extends PApplet {
     public static final int INITIAL_PARACHUTES = 1;
 
     public static final int FPS = 30;
-    public Tile[][] board = new Tile[BOARD_HEIGHT][BOARD_WIDTH];
 
     public String configPath;
 
     public static Random random = new Random();
     public HashMap<String, PImage> sprites = new HashMap<>();
     public List<StaticObject> staticObj = new ArrayList<>();
+    public List<Tile> tiles = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
     public Queue<String> BallsInQueue = new LinkedList<>();
     private int BallsInQueuePadding = 35;
@@ -60,7 +60,16 @@ public class App extends PApplet {
                 "wall1",
                 "wall2",
                 "wall3",
-                "wall4"
+                "wall4",
+                "acc_tile0",
+                "acc_tile1",
+                "acc_tile2",
+                "acc_tile3",
+                "timer_tile0",
+                "timer_tile1",
+                "timer_tile2",
+                "timer_tile3",
+                "timer_tile4"
         };
 
         for (int i = 0; i < local_sprites.length; i++) {
@@ -141,7 +150,7 @@ public class App extends PApplet {
         Balls.add(obj);
     }
 
-    public void initializeObjects(char c1, char c2, int i, int current_row) {
+    public void initializeStaticObject(char c1, char c2, int i, int current_row) {
         if (c1 != ' ') {
             if (c2 != 'H' && c2 != 'B') {
                 if (c1 == 'X') {
@@ -165,8 +174,33 @@ public class App extends PApplet {
         }
     }
 
+    public void initializeTile(char c1, int i, int current_row) {
+        PImage objImg;
+        if (c1 == ' ' || c1 == '0' || c1 == '1' || c1 == '2' || c1 == '3' || c1 == '4') {
+            objImg = sprites.get("tile");
+        } else if (c1 == '^') {
+            objImg = sprites.get("acc_tile0");
+        } else if (c1 == 'v') {
+            objImg = sprites.get("acc_tile1");
+        } else if (c1 == '>') {
+            objImg = sprites.get("acc_tile2");
+        } else if (c1 == '<') {
+            objImg = sprites.get("acc_tile3");
+        } else if (c1 == 'T') {
+            String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3", "timer_tile4" };
+            HashMap<String, PImage> timerTileSpritesMap = loadSprites(timerTileSprites);
+            int state = 4;
+            float x = i * CELLSIZE;
+            float y = current_row * CELLSIZE + TOPBAR;
+            tiles.add(new TimerTile(timerTileSpritesMap, state, x, y));
+            return;
+        } else {
+            objImg = sprites.get("tile");
+        }
+        tiles.add(new Tile(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR));
+    }
+
     public void initializeBoard(String filename) {
-        board = new Tile[BOARD_HEIGHT][BOARD_WIDTH];
         staticObj = new ArrayList<>();
         Balls = new ArrayList<>();
         lines = new ArrayList<>();
@@ -178,16 +212,15 @@ public class App extends PApplet {
                 String line = sc.nextLine();
                 char c1 = ' ';
                 char c2 = ' ';
-                for (int i = 0; i < board[current_row].length; i++) {
-                    PImage objImg = sprites.get("tile");
-                    board[current_row][i] = new Tile(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
+                for (int i = 0; i < BOARD_WIDTH; i++) {
                     c1 = line.charAt(i);
                     if (i == 0) {
                         c2 = ' ';
                     } else {
                         c2 = line.charAt(i - 1);
                     }
-                    initializeObjects(c1, c2, i, current_row);
+                    initializeTile(c1, i, current_row);
+                    initializeStaticObject(c1, c2, i, current_row);
 
                 }
                 current_row += 1;
@@ -218,9 +251,11 @@ public class App extends PApplet {
      * Load all resources such as images. Initialise the elements such as the player
      * and map elements.
      */
+
     @Override
     public void setup() {
         stage = 0;
+        TotalScore = 0;
         frameRate(FPS);
         getSprite();
         getconfig(this.configPath);
@@ -342,11 +377,10 @@ public class App extends PApplet {
         timer();
         score();
 
-        for (Tile[] row : board) {
-            for (Tile tile : row) {
-                tile.draw(this);
-            }
+        for (Tile tile : tiles) {
+            tile.draw(this);
         }
+
         for (StaticObject o : staticObj) {
             o.draw(this);
         }
@@ -508,6 +542,7 @@ public class App extends PApplet {
             }
         }
 
+        // interact objects with the ball
         for (StaticObject o : staticObj) {
             Iterator<Ball> ballIterator = Balls.iterator();
             while (ballIterator.hasNext()) {
@@ -518,6 +553,14 @@ public class App extends PApplet {
                 if (ball.getCaptured()) {
                     calScore(ball, o);
                     ballIterator.remove();
+                }
+            }
+        }
+
+        for (Tile o : tiles) {
+            for (Ball ball : Balls) {
+                if (o.intersect(ball)) {
+                    o.interactWithBall(this, ball);
                 }
             }
         }

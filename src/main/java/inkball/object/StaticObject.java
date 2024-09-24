@@ -9,7 +9,7 @@ public abstract class StaticObject {
         protected PImage objImg;
         protected String objName = "obj";
         protected float[] position = new float[2];
-        protected int state;
+        private int state;
 
         public HashMap<String, PImage> localSprites = new HashMap<>();
 
