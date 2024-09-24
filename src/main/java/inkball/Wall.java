@@ -2,7 +2,6 @@ package inkball;
 
 import inkball.object.RectangleObject;
 import processing.core.PImage;
-import processing.core.PVector;
 import java.util.*;
 import inkball.state.Color;
 
@@ -17,6 +16,20 @@ public class Wall extends RectangleObject {
                 position[1] = y;
                 this.width = objImage.width;
                 this.height = objImage.height;
+                x1 = x;
+                x2 = x + width;
+                y1 = y;
+                y2 = y + height;
+                this.objName = "wall";
+        }
+
+        public Wall(PImage objImg, int state, float x, float y) {
+                super(objImg, x, y);
+                updateState(state);
+                position[0] = x;
+                position[1] = y;
+                this.width = objImg.width;
+                this.height = objImg.height;
                 x1 = x;
                 x2 = x + width;
                 y1 = y;

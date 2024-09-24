@@ -115,88 +115,59 @@ public class App extends PApplet {
         return sprites;
     }
 
-    public void addStaticObject(String filename, int i, int current_row) {
-        StaticObject obj;
-        int xPos = i * CELLSIZE;
-        int yPos = current_row * CELLSIZE + TOPBAR;
-
-        if (filename.startsWith("wall")) {
-            String[] wallSprites = { "wall0", "wall1", "wall2", "wall3", "wall4" };
-            HashMap<String, PImage> wallSpriteMap = loadSprites(wallSprites);
-            int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
-            obj = new Wall(wallSpriteMap, state, xPos, yPos);
-        } else if (filename.startsWith("hole")) {
-            String[] holeSprites = { "hole0", "hole1", "hole2", "hole3", "hole4" };
-            HashMap<String, PImage> holeSpriteMap = loadSprites(holeSprites);
-            int state = Character.getNumericValue(filename.charAt(filename.length() - 1));
-            obj = new Hole(holeSpriteMap, state, xPos, yPos);
-        } else if (filename.equals("entrypoint")) {
-            obj = new EntryPoint(sprites.get(filename), xPos, yPos);
-        } else {
-            obj = null;
-        }
-
-        if (obj != null) {
-            staticObj.add(obj);
-        }
-    }
-
-    public void addDynamicObject(char ballNumber, int i, int current_row) {
-        String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
-        HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
-
-        Ball obj = new Ball(ballSpriteMap, Character.getNumericValue(ballNumber),
-                i * CELLSIZE, current_row * CELLSIZE + TOPBAR);
-        Balls.add(obj);
-    }
-
     public void initializeStaticObject(char c1, char c2, int i, int current_row) {
+        float x = i * CELLSIZE;
+        float y = current_row * CELLSIZE + TOPBAR;
+
         if (c1 != ' ') {
             if (c2 != 'H' && c2 != 'B') {
                 if (c1 == 'X') {
-                    addStaticObject("wall0", i, current_row);
+                    staticObj.add(new Wall(sprites.get("wall0"), 0, x, y));
                 } else if (c1 == '1') {
-                    addStaticObject("wall1", i, current_row);
+                    staticObj.add(new Wall(sprites.get("wall1"), 1, x, y));
                 } else if (c1 == '2') {
-                    addStaticObject("wall2", i, current_row);
+                    staticObj.add(new Wall(sprites.get("wall2"), 2, x, y));
                 } else if (c1 == '3') {
-                    addStaticObject("wall3", i, current_row);
+                    staticObj.add(new Wall(sprites.get("wall3"), 3, x, y));
                 } else if (c1 == '4') {
-                    addStaticObject("wall4", i, current_row);
+                    staticObj.add(new Wall(sprites.get("wall4"), 4, x, y));
                 } else if (c1 == 'S') {
-                    addStaticObject("entrypoint", i, current_row);
+                    staticObj.add(new EntryPoint(sprites.get("entrypoint"), x, y));
+                } else if (c1 == '^') {
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile0"), x, y));
+                } else if (c1 == 'v') {
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile1"), x, y));
+                } else if (c1 == '>') {
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile2"), x, y));
+                } else if (c1 == '<') {
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile3"), x, y));
+                } else if (c1 == 'T') {
+                    String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3",
+                            "timer_tile4" };
+                    HashMap<String, PImage> timerTileSpritesMap = loadSprites(timerTileSprites);
+                    int state = 4;
+                    staticObj.add(new TimerTile(timerTileSpritesMap, state, x, y));
                 }
             } else if (c2 == 'H') {
-                addStaticObject("hole" + c1, i - 1, current_row);
+                x = (i - 1) * CELLSIZE;
+                String[] holeSprites = { "hole0", "hole1", "hole2", "hole3", "hole4" };
+                HashMap<String, PImage> holeSpriteMap = loadSprites(holeSprites);
+                int state = Character.getNumericValue(c1);
+                staticObj.add(new Hole(holeSpriteMap, state, x, y));
+
             } else if (c2 == 'B') {
-                addDynamicObject(c1, i - 1, current_row);
+                x = (i - 1) * CELLSIZE;
+                String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
+                HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
+
+                Ball obj = new Ball(ballSpriteMap, Character.getNumericValue(c1),
+                        x, y);
+                Balls.add(obj);
             }
         }
-    }
-
-    public void initializeTile(char c1, int i, int current_row) {
+        // add a tile to all places
         PImage objImg;
-        if (c1 == ' ' || c1 == '0' || c1 == '1' || c1 == '2' || c1 == '3' || c1 == '4') {
-            objImg = sprites.get("tile");
-        } else if (c1 == '^') {
-            objImg = sprites.get("acc_tile0");
-        } else if (c1 == 'v') {
-            objImg = sprites.get("acc_tile1");
-        } else if (c1 == '>') {
-            objImg = sprites.get("acc_tile2");
-        } else if (c1 == '<') {
-            objImg = sprites.get("acc_tile3");
-        } else if (c1 == 'T') {
-            String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3", "timer_tile4" };
-            HashMap<String, PImage> timerTileSpritesMap = loadSprites(timerTileSprites);
-            int state = 4;
-            float x = i * CELLSIZE;
-            float y = current_row * CELLSIZE + TOPBAR;
-            tiles.add(new TimerTile(timerTileSpritesMap, state, x, y));
-            return;
-        } else {
-            objImg = sprites.get("tile");
-        }
+        objImg = sprites.get("tile");
         tiles.add(new Tile(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR));
     }
 
@@ -219,7 +190,6 @@ public class App extends PApplet {
                     } else {
                         c2 = line.charAt(i - 1);
                     }
-                    initializeTile(c1, i, current_row);
                     initializeStaticObject(c1, c2, i, current_row);
 
                 }
@@ -553,14 +523,6 @@ public class App extends PApplet {
                 if (ball.getCaptured()) {
                     calScore(ball, o);
                     ballIterator.remove();
-                }
-            }
-        }
-
-        for (Tile o : tiles) {
-            for (Ball ball : Balls) {
-                if (o.intersect(ball)) {
-                    o.interactWithBall(this, ball);
                 }
             }
         }
