@@ -255,61 +255,47 @@ public class SampleTest {
         app.calScore(yellowBall, yellowHole);
         assertEquals(app.TotalScore, 320);
 
-        // unmatched, decrease the score
+        // greyball, to any hole
         app.calScore(greyBall, orangeHole);
-        assertEquals(app.TotalScore, 320);
+        assertEquals(app.TotalScore, 390);
         app.calScore(greyBall, blueHole);
-        assertEquals(app.TotalScore, 320);
+        assertEquals(app.TotalScore, 460);
         app.calScore(greyBall, greenHole);
-        assertEquals(app.TotalScore, 320);
+        assertEquals(app.TotalScore, 530);
         app.calScore(greyBall, yellowHole);
-        assertEquals(app.TotalScore, 320);
+        assertEquals(app.TotalScore, 600);
 
         // unmatched, decrease the score
         app.calScore(orangeBall, yellowHole);
-        assertEquals(app.TotalScore, 295);
-        app.calScore(orangeBall, greyHole);
-        assertEquals(app.TotalScore, 270);
+        assertEquals(app.TotalScore, 575);
         app.calScore(orangeBall, blueHole);
-        assertEquals(app.TotalScore, 245);
+        assertEquals(app.TotalScore, 550);
         app.calScore(orangeBall, greenHole);
-        assertEquals(app.TotalScore, 220);
+        assertEquals(app.TotalScore, 525);
 
         // unmatched, decrease the score
         app.calScore(blueBall, yellowHole);
-        assertEquals(app.TotalScore, 195);
-        app.calScore(blueBall, greyHole);
-        assertEquals(app.TotalScore, 170);
+        assertEquals(app.TotalScore, 500);
         app.calScore(blueBall, orangeHole);
-        assertEquals(app.TotalScore, 145);
+        assertEquals(app.TotalScore, 475);
         app.calScore(blueBall, greenHole);
-        assertEquals(app.TotalScore, 120);
+        assertEquals(app.TotalScore, 450);
 
         // unmatched, decrease the score
         app.calScore(greenBall, yellowHole);
-        assertEquals(app.TotalScore, 95);
-        app.calScore(greenBall, greyHole);
-        assertEquals(app.TotalScore, 70);
+        assertEquals(app.TotalScore, 425);
         app.calScore(greenBall, blueHole);
-        assertEquals(app.TotalScore, 45);
+        assertEquals(app.TotalScore, 400);
         app.calScore(greenBall, orangeHole);
-        assertEquals(app.TotalScore, 20);
-
-        // add more score
-        app.calScore(yellowBall, yellowHole);
-        assertEquals(app.TotalScore, 120);
-        app.calScore(yellowBall, yellowHole);
-        assertEquals(app.TotalScore, 220);
-        app.calScore(yellowBall, yellowHole);
-        assertEquals(app.TotalScore, 320);
+        assertEquals(app.TotalScore, 375);
 
         // unmatched, decrease the score
-        app.calScore(yellowBall, greyHole);
-        assertEquals(app.TotalScore, 220);
+        app.calScore(yellowBall, orangeHole);
+        assertEquals(app.TotalScore, 275);
         app.calScore(yellowBall, blueHole);
-        assertEquals(app.TotalScore, 120);
+        assertEquals(app.TotalScore, 175);
         app.calScore(yellowBall, greenHole);
-        assertEquals(app.TotalScore, 20);
+        assertEquals(app.TotalScore, 75);
         app.calScore(yellowBall, orangeHole);
         assertEquals(app.TotalScore, 0); // Cannot below than zero
     }
