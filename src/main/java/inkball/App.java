@@ -317,14 +317,14 @@ public class App extends PApplet {
         String layout = stageInfo.getString("layout");
         initializeBoard(layout);
         JSONArray buffer = stageInfo.getJSONArray("balls");
+        BallsInQueue = new LinkedList<>();
         for (int i = 0; i < buffer.size(); i++) {
-            // BallsInQueue.add(buffer.getString(i));
+            BallsInQueue.add(buffer.getString(i));
         }
         incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
         decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
         spawnInterval = stageInfo.getInt("spawn_interval");
         timeLimit = stageInfo.getInt("time");
-        frameCount = 0;
         spawnCounter = spawnInterval;
         stage++;
         frameCount = 0;
@@ -372,9 +372,9 @@ public class App extends PApplet {
         } else {
             // run the game
             // if the stage is end.
-            stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0 && stage <= levels.size();
+            stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0;
             if (stageEnd) {
-                if (stage < levels.size()) {
+                if (stage <= levels.size()) {
                     endStageDisplay();
                 } else {
                     text("=== ENDED ===", 260, 40);
@@ -392,13 +392,18 @@ public class App extends PApplet {
         // create the yellow wall and overwrite on the board instead.
         timeLeft--;
         TotalScore++;
+        frameCount++;
 
         String filename = "wall" + String.valueOf(Color.YELLOW.ordinal());
         PImage wall = sprites.get(filename);
         movingWall(wall);
 
-        if (timeLeft < 0) {
-            updateStageInfo();
+        if (timeLeft <= 0) {
+            if (stage < levels.size()) {
+                updateStageInfo();
+            } else {
+                stage++;
+            }
         }
     }
 
