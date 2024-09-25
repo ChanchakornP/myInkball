@@ -36,7 +36,7 @@ public class SampleTest {
         Ball ball = new Ball(app.sprites.get("ball0"), 32, 32);
         float[] ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        Wall wall = new Wall(app.sprites, 0, 32, 32);
+        Wall wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
 
         // ********************************************** //
@@ -45,7 +45,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         // test the ball collides to the left side of the wall.
@@ -53,7 +53,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
         ballVel = new float[] { 1, 0 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
 
@@ -63,7 +63,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 7);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         // test the ball collides to the top side of the wall.
@@ -71,7 +71,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 7);
         ballVel = new float[] { 0, 1 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
 
@@ -81,7 +81,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 65, 32);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         // test the ball collides to the right side of the wall.
@@ -89,7 +89,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 65, 32);
         ballVel = new float[] { -1, 0 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
 
@@ -99,7 +99,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 65);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         // test the ball collides to the bottom side of the wall.
@@ -107,7 +107,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 65);
         ballVel = new float[] { 0, -1 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
 
@@ -116,25 +116,25 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 61, 61);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         ball = new Ball(app.sprites.get("ball0"), 61, 61);
         ballVel = new float[] { -1, -1 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
 
         ball = new Ball(app.sprites.get("ball0"), 11, 11);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
         ball = new Ball(app.sprites.get("ball0"), 11, 11);
         ballVel = new float[] { 1, 1 }; // ball move to the right
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
     }
@@ -154,7 +154,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
         ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { -2, 2, 0 }); // diagonal moves
@@ -171,7 +171,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 7);
         ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 2, -2, 0 }); // diagonal moves
@@ -187,7 +187,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 65, 32);
         ballVel = new float[] { -2, 2 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 2, 2, 0 }); // diagonal moves
@@ -203,7 +203,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 7);
         ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 2, -2, 0 }); // diagonal moves
@@ -219,7 +219,7 @@ public class SampleTest {
         ball = new Ball(app.sprites.get("ball0"), 32, 65);
         ballVel = new float[] { 2, -2 };
         ball.setVel(ballVel);
-        wall = new Wall(app.sprites, 0, 32, 32);
+        wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 2, 2, 0 }); // diagonal moves
@@ -249,11 +249,16 @@ public class SampleTest {
         yellowBall = new Ball(ballSpriteMap, Color.YELLOW.ordinal(), 0, 0);
 
         HashMap<String, PImage> holeSpriteMap = app.sprites;
-        greyHole = new Hole(holeSpriteMap, Color.GREY.ordinal(), 0, 0);
-        orangeHole = new Hole(holeSpriteMap, Color.ORANGE.ordinal(), 0, 0);
-        blueHole = new Hole(holeSpriteMap, Color.BLUE.ordinal(), 0, 0);
-        greenHole = new Hole(holeSpriteMap, Color.GREEN.ordinal(), 0, 0);
-        yellowHole = new Hole(holeSpriteMap, Color.YELLOW.ordinal(), 0, 0);
+        greyHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.GREY.ordinal())), Color.GREY.ordinal(), 0,
+                0);
+        orangeHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.ORANGE.ordinal())),
+                Color.ORANGE.ordinal(), 0, 0);
+        blueHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.BLUE.ordinal())), Color.BLUE.ordinal(), 0,
+                0);
+        greenHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.GREEN.ordinal())), Color.GREEN.ordinal(),
+                0, 0);
+        yellowHole = new Hole(holeSpriteMap.get(("hole" + String.valueOf(Color.YELLOW.ordinal()))),
+                Color.YELLOW.ordinal(), 0, 0);
 
         // Matched, increase the score
         app.calScore(greyBall, greyHole);

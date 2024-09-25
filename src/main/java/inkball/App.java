@@ -150,10 +150,9 @@ public class App extends PApplet {
                 }
             } else if (c2 == 'H') {
                 x = (i - 1) * CELLSIZE;
-                String[] holeSprites = { "hole0", "hole1", "hole2", "hole3", "hole4" };
-                HashMap<String, PImage> holeSpriteMap = loadSprites(holeSprites);
                 int state = Character.getNumericValue(c1);
-                staticObj.add(new Hole(holeSpriteMap, state, x, y));
+                String holeSpiriteFilename = "hole" + String.valueOf(c1);
+                staticObj.add(new Hole(sprites.get(holeSpiriteFilename), state, x, y));
 
             } else if (c2 == 'B') {
                 x = (i - 1) * CELLSIZE;
@@ -369,7 +368,7 @@ public class App extends PApplet {
             o.draw(this);
         }
 
-        if (timeLeft == 0 && BallsInQueue.size() != 0 && Balls.size() != 0) {
+        if (timeLeft == 0 && (BallsInQueue.size() != 0 || Balls.size() != 0)) {
             text("*** TIME’S UP ***", 260, 40);
             return;
         }

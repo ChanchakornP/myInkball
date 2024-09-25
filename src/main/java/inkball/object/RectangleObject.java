@@ -35,17 +35,6 @@ public abstract class RectangleObject extends StaticObject {
         y2 = y + height;
     }
 
-    // for Line
-    public RectangleObject(float x1, float y1, float x2, float y2) {
-        this.x1 = x1;
-        this.x2 = x2;
-        this.y1 = y2;
-        this.y2 = y1;
-    }
-
-    public RectangleObject() {
-    }
-
     // for ball, it needs to store images
     public RectangleObject(HashMap<String, PImage> localSprites, int state, float x, float y) {
         setupLocalSprites(localSprites);
@@ -95,35 +84,8 @@ public abstract class RectangleObject extends StaticObject {
     }
 
     public boolean iscollideDiagonal(Ball ball) {
-        float[] ballCenter = ball.getCenter();
-        float radius = ball.getRadius();
-        float[] vel = ball.getVelocity();
-        float[] topLeftNextLocation = new float[] { ballCenter[0] - (float) (radius /
-                Math.sqrt(2)) + vel[0],
-                ballCenter[1] - (float) (radius / Math.sqrt(2)) + vel[1] };
-        float[] topRightNextLocation = new float[] { ballCenter[0] + (float) (radius
-                / Math.sqrt(2)) + vel[0],
-                ballCenter[1] - (float) (radius / Math.sqrt(2)) + vel[1] };
-        float[] bottomLeftNextLocation = new float[] { ballCenter[0] - (float) (radius / Math.sqrt(2)) + vel[0],
-                ballCenter[1] + (float) (radius / Math.sqrt(2)) + vel[1] };
-        float[] bottomRightNextLocation = new float[] {
-                ballCenter[0] + (float) (radius / Math.sqrt(2)) + vel[0],
-                ballCenter[1] + (float) (radius / Math.sqrt(2)) + vel[1] };
-
-        boolean collideTopLeft = topLeftNextLocation[0] >= x1 &&
-                topLeftNextLocation[0] <= x2 &&
-                topLeftNextLocation[1] >= y1 && topLeftNextLocation[1] <= y2;
-        boolean collideTopRight = topRightNextLocation[0] >= x1 &&
-                topRightNextLocation[0] <= x2 &&
-                topRightNextLocation[1] >= y1 && topRightNextLocation[1] <= y2;
-        boolean collideBottomLeft = bottomLeftNextLocation[0] >= x1 &&
-                bottomLeftNextLocation[0] <= x2 &&
-                bottomLeftNextLocation[1] >= y1 && bottomLeftNextLocation[1] <= y2;
-        boolean collideBottomRight = bottomRightNextLocation[0] >= x1 &&
-                bottomRightNextLocation[0] <= x2 &&
-                bottomRightNextLocation[1] >= y1 && bottomRightNextLocation[1] <= y2;
-        return collideTopLeft || collideTopRight || collideBottomLeft ||
-                collideBottomRight;
+        return intersectTopLeft(ball) || intersectTopRight(ball) || intersectBottomLeft(ball)
+                || intersectBottomRight(ball);
     }
 
     public boolean intersectTopLeft(Ball ball) {
@@ -212,7 +174,7 @@ public abstract class RectangleObject extends StaticObject {
     }
 
     public void collideHandling(App app, Ball ball) {
-        if (intersect(ball)) {
+        if (iscollidePendicular(ball)) {
             float[][] lines = getObjectLines();
             int lineNum = whichSideCollide(ball);
 
@@ -227,11 +189,9 @@ public abstract class RectangleObject extends StaticObject {
             float dy = y2 - y1;
             float dx = x2 - x1;
             PVector normVec = new PVector(-dy, dx).normalize();
-
-            // find the closest line
             ball.reflect(normVec);
-        }
-        if (intersectTopLeft(ball)) {
+
+        } else if (intersectTopLeft(ball)) {
             float[] ballVel = ball.getVelocity();
             if (ballVel[0] > 0 && ballVel[1] > 0) {
                 ball.inverseVel();

@@ -20,9 +20,6 @@ public abstract class StaticObject {
 
         public abstract boolean intersect(Ball ball);
 
-        public void updateInfo() {
-        }
-
         public void draw(App app) {
                 app.image(this.objImg, position[0], position[1]);
         }

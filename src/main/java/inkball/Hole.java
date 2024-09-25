@@ -3,33 +3,16 @@ package inkball;
 import inkball.object.RectangleObject;
 import processing.core.PImage;
 import processing.core.PVector;
-import java.util.HashMap;
 
 public class Hole extends RectangleObject {
         float[] center = new float[2];
 
-        public Hole(PImage objImg, float x, float y) {
+        public Hole(PImage objImg, int state, float x, float y) {
                 super(objImg, x, y);
                 center[0] = x + objImg.width / 2;
                 center[1] = y + objImg.height / 2;
                 this.objName = "hole";
-        }
-
-        public Hole(HashMap<String, PImage> localSprites, int state, float x, float y) {
-                super(localSprites, state, x, y);
-                PImage objImage = localSprites.get("hole" + state);
-                this.objImg = objImage;
-                position[0] = x;
-                position[1] = y;
-                center[0] = x + objImg.width / 2;
-                center[1] = y + objImg.height / 2;
-                this.width = objImage.width;
-                this.height = objImage.height;
-                x1 = x;
-                x2 = x + width;
-                y1 = y;
-                y2 = y + height;
-                this.objName = "hole";
+                updateState(state);
         }
 
         @Override

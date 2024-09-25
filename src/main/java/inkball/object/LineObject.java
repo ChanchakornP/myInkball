@@ -12,9 +12,6 @@ public class LineObject extends StaticObject {
     private List<PVector[]> lines = new ArrayList<>();
     private List<int[]> points = new ArrayList<>();
 
-    public LineObject() {
-    }
-
     public void draw(App app) {
         for (PVector[] line : lines) {
             app.line(line[0].x, line[0].y, line[1].x, line[1].y);
