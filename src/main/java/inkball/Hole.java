@@ -34,35 +34,7 @@ public class Hole extends RectangleObject {
 
         @Override
         public boolean intersect(Ball ball) {
-                float[] ballCenter = ball.getCenter();
-                float radius = ball.getRadius();
-                float[] vel = ball.getVelocity();
-                float[] leftNextLocation = new float[] { ballCenter[0] - radius + vel[0],
-                                ballCenter[1] + vel[1] };
-                float[] rightNextLocation = new float[] { ballCenter[0] + radius +
-                                vel[0],
-                                ballCenter[1] };
-                float[] topNextLocation = new float[] { ballCenter[0] +
-                                vel[0],
-                                ballCenter[1] - radius + vel[1] };
-                float[] bottomNextLocation = new float[] { ballCenter[0] +
-                                vel[0],
-                                ballCenter[1] + radius + vel[1] };
-                boolean collideLeft = leftNextLocation[0] >= x1 && leftNextLocation[0] <= x2
-                                &&
-                                leftNextLocation[1] >= y1
-                                && leftNextLocation[1] <= y2;
-                boolean collideTop = rightNextLocation[0] >= x1 && rightNextLocation[0] <= x2
-                                && rightNextLocation[1] >= y1
-                                && rightNextLocation[1] <= y2;
-                boolean collideRight = topNextLocation[0] >= x1 && topNextLocation[0] <= x2
-                                && topNextLocation[1] >= y1
-                                && topNextLocation[1] <= y2;
-                boolean collideBottom = bottomNextLocation[0] >= x1 && bottomNextLocation[0] <= x2
-                                && bottomNextLocation[1] >= y1
-                                && bottomNextLocation[1] <= y2;
-
-                return collideLeft || collideRight || collideBottom || collideTop;
+                return iscollideDiagonal(ball) || iscollidePendicular(ball);
         }
 
         @Override

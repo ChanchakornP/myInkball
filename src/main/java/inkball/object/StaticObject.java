@@ -10,6 +10,7 @@ public abstract class StaticObject {
         protected String objName = "obj";
         protected float[] position = new float[2];
         private int state;
+        private int objCounter;
 
         public HashMap<String, PImage> localSprites = new HashMap<>();
 
@@ -42,4 +43,15 @@ public abstract class StaticObject {
                 return position;
         }
 
+        public int getCounter() {
+                return objCounter;
+        }
+
+        public void incCounter() {
+                objCounter++;
+        }
+
+        public void resetCounter() {
+                objCounter = 0;
+        }
 }

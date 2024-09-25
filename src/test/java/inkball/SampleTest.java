@@ -113,14 +113,26 @@ public class SampleTest {
 
         // ********************************************** //
         // test the ball collides to the corner side of the wall.
-        ball = new Ball(app.sprites.get("ball0"), 53, 53);
+        ball = new Ball(app.sprites.get("ball0"), 61, 61);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
         wall = new Wall(app.sprites, 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
 
-        ball = new Ball(app.sprites.get("ball0"), 53, 53);
+        ball = new Ball(app.sprites.get("ball0"), 61, 61);
         ballVel = new float[] { -1, -1 }; // ball move to the right
+        ball.setVel(ballVel);
+        wall = new Wall(app.sprites, 0, 32, 32);
+        assertEquals(wall.intersect(ball), true);
+
+        ball = new Ball(app.sprites.get("ball0"), 11, 11);
+        ballVel = new float[] { 0, 0 };
+        ball.setVel(ballVel);
+        wall = new Wall(app.sprites, 0, 32, 32);
+        assertEquals(wall.intersect(ball), false);
+
+        ball = new Ball(app.sprites.get("ball0"), 11, 11);
+        ballVel = new float[] { 1, 1 }; // ball move to the right
         ball.setVel(ballVel);
         wall = new Wall(app.sprites, 0, 32, 32);
         assertEquals(wall.intersect(ball), true);

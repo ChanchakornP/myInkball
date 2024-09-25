@@ -134,13 +134,13 @@ public class App extends PApplet {
                 } else if (c1 == 'S') {
                     staticObj.add(new EntryPoint(sprites.get("entrypoint"), x, y));
                 } else if (c1 == '^') {
-                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile0"), x, y));
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile0"), 0, x, y));
                 } else if (c1 == 'v') {
-                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile1"), x, y));
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile1"), 1, x, y));
                 } else if (c1 == '>') {
-                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile2"), x, y));
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile2"), 2, x, y));
                 } else if (c1 == '<') {
-                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile3"), x, y));
+                    staticObj.add(new AcceleratedTile(sprites.get("acc_tile3"), 3, x, y));
                 } else if (c1 == 'T') {
                     String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3",
                             "timer_tile4" };
@@ -316,6 +316,7 @@ public class App extends PApplet {
     float decMod;
     int timeLimit;
     int spawnInterval;
+    int timedTilesSecond;
 
     public void updateStageInfo() {
         JSONObject stageInfo = levels.getJSONObject(stage);
@@ -329,7 +330,16 @@ public class App extends PApplet {
         incMod = stageInfo.getFloat("score_increase_from_hole_capture_modifier");
         decMod = stageInfo.getFloat("score_decrease_from_wrong_hole_modifier");
         spawnInterval = stageInfo.getInt("spawn_interval");
-        timeLimit = stageInfo.getInt("time");
+        try {
+            timeLimit = stageInfo.getInt("time");
+        } catch (RuntimeException e) {
+            timeLimit = -1; // undefined
+        }
+        try {
+            timedTilesSecond = stageInfo.getInt("timedtile_second_disappear");
+        } catch (RuntimeException e) {
+            timedTilesSecond = 10;
+        }
         spawnCounter = spawnInterval;
         stage++;
         frameCount = 0;
@@ -517,12 +527,27 @@ public class App extends PApplet {
             Iterator<Ball> ballIterator = Balls.iterator();
             while (ballIterator.hasNext()) {
                 Ball ball = ballIterator.next();
-                o.interactWithBall(this, ball);
+                // if the ball intersect -> do something
+                if (o.intersect(ball)) {
+                    o.interactWithBall(this, ball);
+                }
 
                 // Remove ball if it is captured by a hole
                 if (ball.getCaptured()) {
                     calScore(ball, o);
                     ballIterator.remove();
+                }
+            }
+
+            // update timerTile state
+            if (o.getObjName().equals("timerTile") && o.getState() > 0) {
+                int timerTileCounter = o.getCounter();
+                if (timerTileCounter > FPS * timedTilesSecond) {
+                    o.resetCounter();
+                    int currentState = o.getState();
+                    o.updateState(currentState - 1);
+                } else {
+                    o.incCounter();
                 }
             }
         }
@@ -551,14 +576,10 @@ public class App extends PApplet {
             spawnCounter = spawnInterval;
         }
 
+        // move the balls
         for (Ball ball : Balls) {
             ball.move();
         }
-        // TODO
-
-        // ----------------------------------
-        // ----------------------------------
-        // display game end message
     }
 
     public void score() {
