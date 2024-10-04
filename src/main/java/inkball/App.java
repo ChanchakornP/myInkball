@@ -442,7 +442,7 @@ public class App extends PApplet {
     }
 
     private float spawnCounter;
-    private float timeLeft;
+    public float timeLeft;
     private int frameCount;
     private int frameOffset;
     private boolean stageEnd;

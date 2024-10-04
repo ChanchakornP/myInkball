@@ -1,10 +1,10 @@
 package inkball;
 
 import java.util.HashMap;
-
 import processing.core.PImage;
 
 public class TimerTile extends Tile {
+
     public TimerTile(PImage objImg, float x, float y) {
         super(objImg, x, y);
     }
@@ -46,5 +46,4 @@ public class TimerTile extends Tile {
         PImage objImage = localSprites.get("timer_tile" + String.valueOf(getState()));
         app.image(objImage, position[0], position[1]);
     }
-
 }

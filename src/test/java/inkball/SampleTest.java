@@ -10,16 +10,16 @@ import inkball.object.StaticObject;
 import inkball.state.Color;
 
 public class SampleTest {
+    // static App app;
 
-    // @Test
-    // public void simpleTest() {
-    // App app = new App();
-    // app.loop();
-    // PApplet.runSketch(new String[] { "App" }, app);
-    // app.setup();
-    // app.delay(1000); // delay is to give time to initialise stuff before drawing
-    // begins
-    // }
+    @Test
+    public void simpleTest() {
+        App app = new App();
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+        app.delay(1000); // delay is to give time to initialise stuff before drawing begins
+    }
 
     // Create collision test cases of a ball and a wall
     @Test
@@ -238,6 +238,7 @@ public class SampleTest {
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
+
         Ball greyBall, orangeBall, blueBall, greenBall, yellowBall;
         StaticObject greyHole, orangeHole, blueHole, greenHole, yellowHole;
         HashMap<String, PImage> ballSpriteMap = app.sprites;
@@ -315,6 +316,10 @@ public class SampleTest {
         assertEquals(app.TotalScore, 75);
         app.calScore(yellowBall, orangeHole);
         assertEquals(app.TotalScore, 0); // Cannot below than zero
+
+        // grayHole
+        app.calScore(yellowBall, greyHole);
+        assertEquals(app.TotalScore, 100); // Cannot below than zero
     }
 
     // test lineIntersect
@@ -324,6 +329,7 @@ public class SampleTest {
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
+
         Ball ball;
         float[] ballVel;
         LineObject testedLine;
@@ -377,9 +383,32 @@ public class SampleTest {
         ball.setVel(ballVel);
         assertEquals(testedLine.intersect(ball), true);
         // ********************************************** //
-
     }
+
     // test lineBouncing
+    @Test
+    public void testBallLineInteraction() {
+        App app = new App();
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+        Ball ball;
+        float[] ballVel;
+        LineObject testedLine;
+
+        // ********************************************** //
+        // test horizontal line
+        testedLine = new LineObject();
+        for (int i = 0; i < 100; i++) {
+            testedLine.addPoints(i, 32);
+        }
+        ball = new Ball(app.sprites.get("ball0"), 50, 12);
+        ballVel = new float[] { 0, 1 };
+        ball.setVel(ballVel);
+        testedLine.interactWithBall(app, ball);
+        assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }); // perpendicular moeves
+    }
+
 }
 
 // gradle run Run the program
