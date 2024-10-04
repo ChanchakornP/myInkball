@@ -5,26 +5,18 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import processing.core.PImage;
-import inkball.object.LineObject;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
-public class SampleTest {
-    // static App app;
-
-    @Test
-    public void simpleTest() {
-        App app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.setup();
-        app.delay(1000); // delay is to give time to initialise stuff before drawing begins
-    }
+public class LogicTest {
+    static App app;
 
     // Create collision test cases of a ball and a wall
     @Test
     public void testBallWallIntersect() {
-        App app = new App();
+        app = new App();
+        app.configPath = "test_config.json";
+
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
@@ -142,7 +134,9 @@ public class SampleTest {
     // Create ball bouncing test cases
     @Test
     public void testBallWallInteraction() {
-        App app = new App();
+        app = new App();
+        app.configPath = "test_config.json";
+
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
@@ -234,7 +228,9 @@ public class SampleTest {
     // Create score calculation logic
     @Test
     public void testUpdatingScore() {
-        App app = new App();
+        app = new App();
+        app.configPath = "test_config.json";
+
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
@@ -325,17 +321,19 @@ public class SampleTest {
     // test lineIntersect
     @Test
     public void testBallLineIntersect() {
-        App app = new App();
+        app = new App();
+        app.configPath = "test_config.json";
+
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         Ball ball;
         float[] ballVel;
-        LineObject testedLine;
+        DrawingLine testedLine;
         // ********************************************** //
         // test horizontal line
-        testedLine = new LineObject();
+        testedLine = new DrawingLine();
         for (int i = 0; i < 100; i++) {
             testedLine.addPoints(i, 32);
         }
@@ -352,7 +350,7 @@ public class SampleTest {
 
         // ********************************************** //
         // test verticalLine line
-        testedLine = new LineObject();
+        testedLine = new DrawingLine();
         for (int i = 0; i < 100; i++) {
             testedLine.addPoints(32, i);
         }
@@ -369,7 +367,7 @@ public class SampleTest {
 
         // ********************************************** //
         // test diagonal line
-        testedLine = new LineObject();
+        testedLine = new DrawingLine();
         for (int i = 0; i < 100; i++) {
             testedLine.addPoints(i, 100 - i);
         }
@@ -388,17 +386,19 @@ public class SampleTest {
     // test lineBouncing
     @Test
     public void testBallLineInteraction() {
-        App app = new App();
+        app = new App();
+        app.configPath = "test_config.json";
+
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
         Ball ball;
         float[] ballVel;
-        LineObject testedLine;
+        DrawingLine testedLine;
 
         // ********************************************** //
         // test horizontal line
-        testedLine = new LineObject();
+        testedLine = new DrawingLine();
         for (int i = 0; i < 100; i++) {
             testedLine.addPoints(i, 32);
         }
@@ -407,6 +407,30 @@ public class SampleTest {
         ball.setVel(ballVel);
         testedLine.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }); // perpendicular moeves
+    }
+
+    public static void assertFloatEquals(double expected, double actual, double tolerance) {
+        if (Double.compare(expected, -0.0) == 0 && Double.compare(actual, 0.0) == 0) {
+            return; // Treat -0.0 and 0.0 as equal
+        }
+        if (Double.compare(actual, -0.0) == 0 && Double.compare(expected, 0.0) == 0) {
+            return; // Treat 0.0 and -0.0 as equal
+        }
+        // Otherwise, use standard comparison with tolerance
+        assertEquals(expected, actual, tolerance);
+    }
+
+    @Test
+    public void testBallVelocity() {
+        Ball ball;
+        float[] ballVel;
+
+        ball = new Ball(app.sprites.get("ball0"), 50, 12);
+        ballVel = new float[] { 0, 1 };
+        ball.setVel(ballVel);
+        ball.inverseVel();
+        assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }, (float) 0.001); // perpendicular moeves
+
     }
 
 }

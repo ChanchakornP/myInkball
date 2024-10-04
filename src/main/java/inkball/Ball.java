@@ -91,10 +91,6 @@ public class Ball extends DynamicObject {
         this.vel = PVector.mult(vel, -1);
     }
 
-    public void rotateVel(int theta) {
-        vel = this.vel.rotate(theta);
-    }
-
     public void reflect(PVector normVec) {
         // u = v - 2 * (vel . normVec) * normVec
         float dotProduct = PVector.dot(vel, normVec);

@@ -1,13 +1,12 @@
-package inkball.object;
+package inkball;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import inkball.App;
-import inkball.Ball;
+import inkball.object.StaticObject;
 import processing.core.PVector;
 
-public class LineObject extends StaticObject {
+public class DrawingLine extends StaticObject {
     int lineWidth = 10;
     private List<PVector[]> lines = new ArrayList<>();
     private List<int[]> points = new ArrayList<>();

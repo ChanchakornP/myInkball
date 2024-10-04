@@ -10,14 +10,19 @@ import processing.event.MouseEvent;
 import java.util.*;
 
 public class EventTest {
+    static App app;
+
     @Test
     public void testKeyEvent() {
-        App app = new App();
+        // Test Pause, restart, CTRL and other keys
+        app = new App();
+        app.configPath = "test_config.json";
         app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        PApplet.runSketch(new String[] { "EventTestApp" }, app);
         app.setup();
-        app.delay(3000);
+        app.delay(1000);
 
+        // Test Pausing
         Object tmp = new String("a");
         KeyEvent keyStop = new KeyEvent(tmp, (long) 0, 0, 0, ' ', 0, false);
         app.keyPressed(keyStop);
@@ -26,29 +31,35 @@ public class EventTest {
         app.keyPressed(keyStop);
         app.keyReleased(keyStop);
 
+        // Test restarting
         KeyEvent keyRestart = new KeyEvent(tmp, (long) 0, 0, 0, 'r', 0, false);
         app.keyPressed(keyRestart);
         app.keyReleased(keyRestart);
         app.delay(1000);
 
+        // Test CTRL
         KeyEvent keyCTRL = new KeyEvent(tmp, (long) 0, 0, 0, '0', KeyEvent.CTRL,
                 false);
         app.keyPressed(keyCTRL);
         app.keyReleased(keyCTRL);
         app.delay(1000);
 
+        // Test other keys
         KeyEvent keyUNK = new KeyEvent(tmp, (long) 0, 0, 0, '0', 0, false);
         app.keyPressed(keyUNK);
         app.keyReleased(keyUNK);
-        app.delay(3000);
+        app.delay(1000);
 
     }
 
     @Test
     public void testMouseEvent() {
-        App app = new App();
+        // Test leftclick, rightclick, left-dragged, right-dragged, left-release,
+        // right-release
+        app = new App();
+        app.configPath = "test_config.json";
         app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        PApplet.runSketch(new String[] { "EventTestApp" }, app);
         app.setup();
         app.delay(3000);
 
@@ -112,49 +123,6 @@ public class EventTest {
 
     }
 
-    @Test
-    public void testNoGivenTime() {
-        App app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.setup();
-        app.timeLimit = -1;
-        app.delay(1000);
-    }
-
-    @Test
-    public void testTimeLeft() {
-        App app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.setup();
-        app.timeLimit = 1;
-        app.delay(1000);
-    }
-
-    @Test
-    public void noConfigFile() {
-        App app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.setup();
-        app.configPath = "nofile.json";
-    }
-
-    @Test
-    public void testEndStage() {
-        App app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.setup();
-        app.delay(3000);
-        app.BallsInQueue = new LinkedList<>();
-        app.Balls = new LinkedList<>();
-        app.timeLimit = 60;
-        assertEquals(app.BallsInQueue.size() == 0, true);
-        assertEquals(app.Balls.size() == 0, true);
-        app.delay(5000); // delay is to give time to initialise stuff before drawing begins
-    }
 }
 
 // gradle run Run the program

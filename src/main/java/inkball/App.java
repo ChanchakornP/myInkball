@@ -10,7 +10,6 @@ import processing.event.MouseEvent;
 import java.io.*;
 import java.util.*;
 
-import inkball.object.LineObject;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
@@ -35,6 +34,8 @@ public class App extends PApplet {
     public static Random random = new Random();
     public HashMap<String, PImage> sprites = new HashMap<>();
     public List<StaticObject> staticObj = new ArrayList<>();
+    public List<Straightline> hiddenBorder = new ArrayList<>();
+
     public List<Tile> tiles = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
     public Queue<String> BallsInQueue = new LinkedList<>();
@@ -113,6 +114,14 @@ public class App extends PApplet {
             sprites.put(spriteName, result);
         }
         return sprites;
+    }
+
+    public void initializeHiddenWall() {
+        // 4 hidden borders
+        hiddenBorder.add(new Straightline(0, TOPBAR, WIDTH, TOPBAR));
+        hiddenBorder.add(new Straightline(WIDTH, TOPBAR, WIDTH, HEIGHT));
+        hiddenBorder.add(new Straightline(WIDTH, HEIGHT, 0, HEIGHT));
+        hiddenBorder.add(new Straightline(0, HEIGHT, 0, TOPBAR));
     }
 
     public void initializeStaticObject(char c1, char c2, int i, int current_row) {
@@ -229,6 +238,7 @@ public class App extends PApplet {
         getSprite();
         getconfig(this.configPath);
         updateStageInfo();
+        initializeHiddenWall();
     }
 
     /**
@@ -258,19 +268,19 @@ public class App extends PApplet {
         }
     }
 
-    public List<LineObject> lines = new ArrayList<>();
-    private LineObject currentLine; // To keep track of the current line being drawn
+    public List<DrawingLine> lines = new ArrayList<>();
+    private DrawingLine currentLine; // To keep track of the current line being drawn
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == App.LEFT) {
-            currentLine = new LineObject();
+            currentLine = new DrawingLine();
             lines.add(currentLine);
         } else if (e.getButton() == App.RIGHT) {
             // remove line when right click
-            Iterator<LineObject> linesIterator = lines.iterator();
+            Iterator<DrawingLine> linesIterator = lines.iterator();
             while (linesIterator.hasNext()) {
-                LineObject line = linesIterator.next();
+                DrawingLine line = linesIterator.next();
                 if (line.intersect(e.getX(), e.getY())) {
                     linesIterator.remove();
                 }
@@ -286,18 +296,18 @@ public class App extends PApplet {
             currentLine.addPoints(x, y);
         } else if (e.getButton() == App.LEFT && controlPressed) {
             // remove line when control and left click
-            Iterator<LineObject> linesIterator = lines.iterator();
+            Iterator<DrawingLine> linesIterator = lines.iterator();
             while (linesIterator.hasNext()) {
-                LineObject line = linesIterator.next();
+                DrawingLine line = linesIterator.next();
                 if (line.intersect(e.getX(), e.getY())) {
                     linesIterator.remove();
                 }
             }
         } else if (e.getButton() == App.RIGHT) {
             // remove line when right click
-            Iterator<LineObject> linesIterator = lines.iterator();
+            Iterator<DrawingLine> linesIterator = lines.iterator();
             while (linesIterator.hasNext()) {
-                LineObject line = linesIterator.next();
+                DrawingLine line = linesIterator.next();
                 if (line.intersect(e.getX(), e.getY())) {
                     linesIterator.remove();
                 }
@@ -307,7 +317,7 @@ public class App extends PApplet {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        currentLine = new LineObject();
+        currentLine = new DrawingLine();
     }
 
     int stage;
@@ -373,7 +383,7 @@ public class App extends PApplet {
             return;
         }
 
-        for (LineObject line : lines) {
+        for (DrawingLine line : lines) {
             stroke(0);
             strokeWeight(10);
             line.draw(this);
@@ -509,11 +519,18 @@ public class App extends PApplet {
         // ----------------------------------
         frameCount++;
         spawnCounter = spawnInterval - (float) (frameCount - frameOffset) / FPS;
+        for (Ball ball : Balls) {
+            for (Straightline line : hiddenBorder) {
+                if (line.intersect(ball)) {
+                    line.interactWithBall(this, ball);
+                }
+            }
+        }
 
         for (Ball ball : Balls) {
-            Iterator<LineObject> linesIterator = lines.iterator();
+            Iterator<DrawingLine> linesIterator = lines.iterator();
             while (linesIterator.hasNext()) {
-                LineObject line = linesIterator.next();
+                DrawingLine line = linesIterator.next();
                 if (line.intersect(ball)) {
                     line.interactWithBall(this, ball);
                     linesIterator.remove();
@@ -560,19 +577,22 @@ public class App extends PApplet {
                     spawners.add(o);
                 }
             }
-            Random random = new Random();
+            // Check if there is a spawner
+            if (spawners.size() > 0) {
+                Random random = new Random();
 
-            StaticObject randomEntryPoint = spawners.get(random.nextInt(spawners.size()));
+                StaticObject randomEntryPoint = spawners.get(random.nextInt(spawners.size()));
 
-            String ballColor = BallsInQueue.remove();
-            String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
-            HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
-            float[] spawnPos = randomEntryPoint.getPosition();
-            Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
-                    spawnPos[0], spawnPos[1]);
-            Balls.add(obj);
-            frameOffset = frameCount;
-            spawnCounter = spawnInterval;
+                String ballColor = BallsInQueue.remove();
+                String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
+                HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
+                float[] spawnPos = randomEntryPoint.getPosition();
+                Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
+                        spawnPos[0], spawnPos[1]);
+                Balls.add(obj);
+                frameOffset = frameCount;
+                spawnCounter = spawnInterval;
+            }
         }
 
         // move the balls
