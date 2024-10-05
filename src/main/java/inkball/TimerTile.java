@@ -5,10 +5,6 @@ import processing.core.PImage;
 
 public class TimerTile extends Tile {
 
-    public TimerTile(PImage objImg, float x, float y) {
-        super(objImg, x, y);
-    }
-
     public TimerTile(HashMap<String, PImage> localSprites, int state, float x, float y) {
         super(localSprites, state, x, y);
         PImage objImage = localSprites.get("timer_tile" + String.valueOf(state));
@@ -34,10 +30,6 @@ public class TimerTile extends Tile {
 
     @Override
     public void interactWithBall(App app, Ball ball) {
-        if (!iscollidePendicular(ball) && !iscollideDiagonal(ball)) {
-            return;
-        }
-
         collideHandling(app, ball);
     }
 

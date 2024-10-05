@@ -99,13 +99,6 @@ public class Ball extends DynamicObject {
         vel = newVelocity;
     }
 
-    public PVector newVelocity(PVector normVec) {
-        float dotProduct = PVector.dot(vel, normVec);
-        PVector reflection = PVector.mult(PVector.mult(normVec, dotProduct), 2);
-        PVector newVelocity = PVector.sub(vel, reflection);
-        return newVelocity;
-    }
-
     public void draw(App app) {
         PImage objImgTmp = getLocalSprites().get("ball" + String.valueOf(getState())).copy();
         if (this.width < 28) {

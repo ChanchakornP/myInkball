@@ -32,14 +32,6 @@ public abstract class DynamicObject {
         return this.localSprites;
     }
 
-    public void updateLocalSpritesSize(int x, int y) {
-        for (String str : localSprites.keySet()) {
-            PImage tmpImg = localSprites.get(str);
-            tmpImg.resize(x, y);
-            localSprites.put(str, tmpImg);
-        }
-    }
-
     public void draw(App app) {
         app.image(objImg, position[0], position[1]);
     }

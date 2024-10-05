@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 import processing.core.PImage;
+import processing.core.PVector;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
@@ -15,7 +16,7 @@ public class LogicTest {
     @Test
     public void testBallWallIntersect() {
         app = new App();
-        app.configPath = "test_config.json";
+        // app.configPath = "test_config.json";
 
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
@@ -105,14 +106,15 @@ public class LogicTest {
 
         // ********************************************** //
         // test the ball collides to the corner side of the wall.
+
         ball = new Ball(app.sprites.get("ball0"), 61, 61);
         ballVel = new float[] { 0, 0 };
         ball.setVel(ballVel);
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
-
+        // Collide bottom-right of the wall
         ball = new Ball(app.sprites.get("ball0"), 61, 61);
-        ballVel = new float[] { -1, -1 }; // ball move to the right
+        ballVel = new float[] { -1, -1 };
         ball.setVel(ballVel);
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
@@ -122,9 +124,9 @@ public class LogicTest {
         ball.setVel(ballVel);
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), false);
-
+        // Collide top-left of the wall
         ball = new Ball(app.sprites.get("ball0"), 11, 11);
-        ballVel = new float[] { 1, 1 }; // ball move to the right
+        ballVel = new float[] { 1, 1 };
         ball.setVel(ballVel);
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
@@ -229,7 +231,7 @@ public class LogicTest {
     @Test
     public void testUpdatingScore() {
         app = new App();
-        app.configPath = "test_config.json";
+        // app.configPath = "test_config.json";
 
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
@@ -322,7 +324,7 @@ public class LogicTest {
     @Test
     public void testBallLineIntersect() {
         app = new App();
-        app.configPath = "test_config.json";
+        // app.configPath = "test_config.json";
 
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
@@ -422,6 +424,7 @@ public class LogicTest {
 
     @Test
     public void testBallVelocity() {
+        // Test reverse velocity
         Ball ball;
         float[] ballVel;
 
@@ -430,6 +433,72 @@ public class LogicTest {
         ball.setVel(ballVel);
         ball.inverseVel();
         assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }, (float) 0.001); // perpendicular moeves
+    }
+
+    @Test
+    public void testBallTimerTileIntersect() {
+        // Create collision test cases of a ball and a TimerTile
+        app = new App();
+        // app.configPath = "test_config.json";
+
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+
+        // Create a ball object at topleft position is 32, 32
+        // then set it's velocity to 2
+        // Create a wall object at the same position.
+        // must be collide.
+        Ball ball = new Ball(app.sprites.get("ball0"), 32, 32);
+        float[] ballVel = new float[] { 2, 2 };
+        ball.setVel(ballVel);
+
+        String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3",
+                "timer_tile4" };
+        HashMap<String, PImage> timerTileSpritesMap = app.loadSprites(timerTileSprites);
+        int state = 4;
+        TimerTile wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
+        assertEquals(wall.intersect(ball), true);
+        wall.updateState(0);
+        assertEquals(wall.intersect(ball), false);
+    }
+
+    @Test
+    public void testBallTimerTileInteract() {
+        // Create collision test cases of a ball and a TimerTile
+        app = new App();
+        // app.configPath = "test_config.json";
+
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.setup();
+
+        // Create a ball object at topleft position is 32, 32
+        // then set it's velocity to 2
+        // Create a wall object at the same position.
+        // must be collide.
+        Ball ball = new Ball(app.sprites.get("ball0"), 32, 32);
+        float[] ballVel = new float[] { 2, 2 };
+        ball.setVel(ballVel);
+
+        String[] timerTileSprites = { "timer_tile0", "timer_tile1", "timer_tile2", "timer_tile3",
+                "timer_tile4" };
+        HashMap<String, PImage> timerTileSpritesMap = app.loadSprites(timerTileSprites);
+        int state = 4;
+        TimerTile wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
+
+        ball = new Ball(app.sprites.get("ball0"), 7, 32);
+        ballVel = new float[] { 2, 2 };
+        ball.setVel(ballVel);
+        wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
+        assertEquals(wall.intersect(ball), true);
+        wall.interactWithBall(app, ball);
+        assertArrayEquals(ball.getVelocity(), new float[] { -2, 2, 0 }); // diagonal moves
+
+        ballVel = new float[] { 2, 0 };
+        ball.setVel(ballVel);
+        wall.interactWithBall(app, ball);
+        assertArrayEquals(ball.getVelocity(), new float[] { -2, 0, 0 }); // perpendicular moeves
 
     }
 

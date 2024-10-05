@@ -1,0 +1,18 @@
+4XXXXXXXXXXXXXXXX4
+X4X            X4X
+XX4X          X4XX
+X X4X        X4X X
+X  X4X      X4X  X
+X   X4X^^^^X4X   X
+X    X ^^^^ X    X
+X  B1S      S    X
+X    <<    >>    X
+X    <<    >>    X
+X    S      S B2 X
+X    X vvvv X    X
+X   X4XvvvvX4X   X
+X  X4X      X4X  X
+X X4X        X4X X
+XX4X          X4XX
+X4X            X4X
+4XXXXXXXXXXXXXXXX4

@@ -5,8 +5,8 @@ import inkball.object.StaticObject;
 import processing.core.PVector;
 
 public class Straightline extends StaticObject {
-    // PVector p1 = new PVector();
-    // PVector p2 = new PVector();
+    // work around for now to handle the stage without the walls.
+    // create hidden line around the stage.
     PVector normVec = new PVector();
     int x1, y1, x2, y2;
 

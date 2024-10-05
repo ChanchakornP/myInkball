@@ -12,17 +12,18 @@ public class StageTest {
 
     @Test
     public void DrawStages() {
+        // Draw Every Stage in the config file
         app = new App();
         app.configPath = "test_config.json";
         app.loop();
-        PApplet.runSketch(new String[] { "StageTestApp" }, app);
+        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
-        app.delay(100);
+        // app.delay(100);
         int numStages = app.levels.size();
         for (int i = 0; i < numStages - 1; i++) {
             app.stage = i;
             app.updateStageInfo();
-            app.delay(1000);
+            app.delay(5000);
         }
     }
 }
