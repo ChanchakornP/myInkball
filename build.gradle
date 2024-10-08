@@ -43,6 +43,7 @@ test {
     // Use junit platform for unit tests
     useJUnitPlatform()
     ignoreFailures = true
+    maxParallelForks = 1
 }
 
 jar {
