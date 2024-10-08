@@ -14,25 +14,22 @@ public class StageTest {
     @BeforeAll
     public static void setup() {
         app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        app.noLoop();
+        PApplet.runSketch(new String[] { "--headless", "App" }, app);
         app.configPath = "test_config.json";
-        app.delay(500);
     }
 
     @Test
     public void DrawStages() {
         app.setup();
-        app.delay(300);
+        app.stage = 0;
+        assertEquals(app.stage, 0);
         int numStages = app.levels.size();
-
         for (int i = 0; i < numStages; i++) {
-            app.delay(10);
-            app.BallsInQueue = new LinkedList<>();
-            app.Balls = new LinkedList<>();
-            app.timeLimit = 1;
-            app.delay(2000);
+            assertEquals(app.stage, i);
+            app.redraw();
+            app.delay(1000);
+            app.updateStageInfo();
         }
-        // app.delay(2000);
     }
 }

@@ -14,26 +14,24 @@ public class StageEndTest {
     @BeforeAll
     public static void setup() {
         app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
-        app.delay(2000);
+        app.noLoop();
+        PApplet.runSketch(new String[] { "--headless", "App" }, app);
     }
 
     @Test
     public void testEndStage() {
         // Test moving walls at the end of the stage
         app.setup();
-        app.delay(300);
-
         app.BallsInQueue = new LinkedList<>();
         app.Balls = new LinkedList<>();
-        // app.delay(1000); // delay is to give time to initialise stuff before drawing
-        // begins
-
         app.timeLimit = 60;
         assertEquals(app.BallsInQueue.size() == 0, true);
         assertEquals(app.Balls.size() == 0, true);
-        app.delay(5000); // delay is to give time to initialise stuff before drawing
-        // begins
+        // for (int i = 0; i < 100; i++) {
+        // app.endStageDisplay();
+
+        // }
+        app.loop();
+        app.delay(5000);
     }
 }

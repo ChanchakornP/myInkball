@@ -25,9 +25,6 @@ public class Hole extends RectangleObject {
 
         @Override
         public void interactWithBall(App app, Ball ball) {
-                if (!intersect(ball)) {
-                        return;
-                }
                 float[] ballCenter = ball.getCenter();
                 PVector gravityVector = new PVector(center[0] - ballCenter[0], center[1] - ballCenter[1]);
                 int ballSize = (int) gravityVector.mag() + 1;

@@ -12,8 +12,8 @@ public class KeyEventTest {
     @BeforeAll
     public static void setup() {
         app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        app.noLoop();
+        PApplet.runSketch(new String[] { "--headless", "App" }, app);
         app.delay(2000);
     }
 

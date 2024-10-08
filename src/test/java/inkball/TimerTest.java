@@ -13,8 +13,8 @@ public class TimerTest {
     @BeforeAll
     public static void setup() {
         app = new App();
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        app.noLoop();
+        PApplet.runSketch(new String[] { "--headless", "App" }, app);
         app.delay(2000);
     }
 
@@ -22,20 +22,18 @@ public class TimerTest {
     public void testNoGivenTime() {
         // Test layout when given timelimit = -1
         app.setup();
-        app.delay(300);
-
         app.timeLimit = -1;
-        app.delay(1000);
+        app.loop();
+        app.delay(2000);
     }
 
     @Test
     public void testTimeLeft() {
         // Test timeout
         app.setup();
-        app.delay(300);
-
         app.timeLimit = 1;
-        app.delay(3000);
+        app.loop();
+        app.delay(2000);
     }
 
     // @Test

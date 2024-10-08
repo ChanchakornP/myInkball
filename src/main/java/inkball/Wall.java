@@ -31,10 +31,6 @@ public class Wall extends RectangleObject {
 
         @Override
         public void interactWithBall(App app, Ball ball) {
-                if (!iscollidePendicular(ball) && !iscollideDiagonal(ball)) {
-                        return;
-                }
-
                 collideHandling(app, ball);
 
                 if (getState() != Color.GREY.ordinal()) {

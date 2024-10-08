@@ -18,7 +18,7 @@ public class LogicTest {
     public static void setup() {
         app = new App();
         app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
+        PApplet.runSketch(new String[] { "--headless", "App" }, app);
         app.delay(2000);
     }
 
@@ -34,7 +34,7 @@ public class LogicTest {
         Ball ball = new Ball(app.sprites.get("ball0"), 32, 32);
         float[] ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        Wall wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
+        StaticObject wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
 
         // ********************************************** //
@@ -136,16 +136,16 @@ public class LogicTest {
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
+        app.delay(1000);
     }
 
     // Create ball bouncing test cases
     @Test
     public void testBallWallInteraction() {
-        app.configPath = "test_config.json";
         app.setup();
         Ball ball;
         float[] ballVel;
-        Wall wall;
+        StaticObject wall;
         // ********************************************** //
         // The ball moves to the right, should be bounced to left.
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
@@ -226,6 +226,8 @@ public class LogicTest {
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 0, 2, 0 }); // perpendicular moeves
         // ********************************************** //
+
+        app.delay(1000);
     }
 
     // Create score calculation logic
@@ -314,6 +316,9 @@ public class LogicTest {
         // grayHole
         app.calScore(yellowBall, greyHole);
         assertEquals(app.TotalScore, 100); // Cannot below than zero
+
+        app.delay(1000);
+
     }
 
     // test lineIntersect
@@ -374,6 +379,9 @@ public class LogicTest {
         ball.setVel(ballVel);
         assertEquals(testedLine.intersect(ball), true);
         // ********************************************** //
+
+        app.delay(1000);
+
     }
 
     // test lineBouncing
@@ -395,6 +403,8 @@ public class LogicTest {
         ball.setVel(ballVel);
         testedLine.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }); // perpendicular moeves
+        app.delay(1000);
+
     }
 
     public static void assertFloatEquals(double expected, double actual, double tolerance) {
@@ -406,6 +416,7 @@ public class LogicTest {
         }
         // Otherwise, use standard comparison with tolerance
         assertEquals(expected, actual, tolerance);
+
     }
 
     @Test
@@ -459,7 +470,7 @@ public class LogicTest {
                 "timer_tile4" };
         HashMap<String, PImage> timerTileSpritesMap = app.loadSprites(timerTileSprites);
         int state = 4;
-        TimerTile wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
+        StaticObject wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
 
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
         ballVel = new float[] { 2, 2 };

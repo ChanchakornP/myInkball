@@ -262,13 +262,15 @@ public class App extends PApplet {
 
     @Override
     public void setup() {
-        stage = 0;
-        TotalScore = 0;
         frameRate(FPS);
         getSprite();
         getconfig(this.configPath);
         updateStageInfo();
         initializeHiddenWall();
+        stage = 0;
+        TotalScore = 0;
+        controlPressed = false;
+
     }
 
     boolean gamestop;
@@ -306,9 +308,18 @@ public class App extends PApplet {
      */
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == App.LEFT) {
+        if (e.getButton() == App.LEFT && !controlPressed) {
             currentLine = new DrawingLine();
             lines.add(currentLine);
+        } else if (e.getButton() == App.LEFT && controlPressed) {
+            // remove line when control and left click
+            Iterator<DrawingLine> linesIterator = lines.iterator();
+            while (linesIterator.hasNext()) {
+                DrawingLine line = linesIterator.next();
+                if (line.intersect(e.getX(), e.getY())) {
+                    linesIterator.remove();
+                }
+            }
         } else if (e.getButton() == App.RIGHT) {
             // remove line when right click
             Iterator<DrawingLine> linesIterator = lines.iterator();
@@ -545,6 +556,7 @@ public class App extends PApplet {
      * Displays unloaded balls at the top-left of the GUI.
      */
     public void drawLoadingBalls() {
+        fill(0);
         rect(loadingX, loadingY, loadingWidth, loadingHeight);
         int counter = 0;
         // draw balls in the queue
