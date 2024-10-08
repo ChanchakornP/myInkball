@@ -2,21 +2,24 @@ package inkball;
 
 import processing.core.PApplet;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import processing.event.KeyEvent;
 
 public class KeyEventTest {
     static App app;
 
-    @Test
-    public void testKeyEvent() {
-        // Test Pause, restart, CTRL and other keys
+    @BeforeAll
+    public static void setup() {
         app = new App();
-        // app.configPath = "test_config.json";
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
+        app.delay(2000);
+    }
+
+    @Test
+    public void testKeyEvent() {
         app.setup();
-        // app.delay(1000);
 
         // Test Pausing
         Object tmp = new String("a");

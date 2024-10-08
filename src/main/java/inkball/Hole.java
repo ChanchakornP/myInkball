@@ -4,6 +4,9 @@ import inkball.object.RectangleObject;
 import processing.core.PImage;
 import processing.core.PVector;
 
+/**
+ * The hole object. If it interact with the ball, it captures the ball.
+ */
 public class Hole extends RectangleObject {
         float[] center = new float[2];
 

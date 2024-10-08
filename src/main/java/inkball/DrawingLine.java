@@ -6,6 +6,9 @@ import java.util.List;
 import inkball.object.StaticObject;
 import processing.core.PVector;
 
+/**
+ * The drawing line from the user.
+ */
 public class DrawingLine extends StaticObject {
     int lineWidth = 10;
     private List<PVector[]> lines = new ArrayList<>();
@@ -17,6 +20,13 @@ public class DrawingLine extends StaticObject {
         }
     }
 
+    /**
+     * Add more points to the object. If there is 4 points, it forms point to the
+     * line object.
+     * 
+     * @param x x - position
+     * @param y y - position
+     */
     public void addPoints(int x, int y) {
         points.add(new int[] { x, y });
         if (points.size() > 4) {
@@ -26,6 +36,11 @@ public class DrawingLine extends StaticObject {
         }
     }
 
+    /**
+     * Create sub-line object by given points.
+     * 
+     * @param points
+     */
     public void addLine(List<int[]> points) {
 
         int maxX, maxY, minX, minY;
@@ -89,6 +104,14 @@ public class DrawingLine extends StaticObject {
         return false;
     }
 
+    /**
+     * Check if the ball collides with this object by checking intersect each
+     * sub-lines.
+     * 
+     * @param ball     ball object
+     * @param lineVecs sub-lines of this object.
+     * @return
+     */
     public boolean lineIntersect(Ball ball, PVector[] lineVecs) {
         PVector ballPos = ball.nextFramePositionVec();
         float dist1 = PVector.sub(ballPos, lineVecs[0]).mag();

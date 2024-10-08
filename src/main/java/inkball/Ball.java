@@ -6,6 +6,9 @@ import processing.core.PVector;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * The ball object.
+ */
 public class Ball extends DynamicObject {
     private boolean captured = false;
 

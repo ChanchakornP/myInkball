@@ -3,6 +3,9 @@ package inkball;
 import processing.core.PImage;
 import inkball.state.AccTile;
 
+/**
+ * An accelerated tile, speed up the ball in a specific direction.
+ */
 public class AcceleratedTile extends Tile {
     public AcceleratedTile(PImage objImg, float x, float y) {
         super(objImg, x, y);
@@ -14,7 +17,10 @@ public class AcceleratedTile extends Tile {
         objName = "acctile";
     }
 
-    // If center of the ball is inside the tile
+    /**
+     * If the center of the ball is inside the accelerated tile, considered it is
+     * intersected.
+     */
     @Override
     public boolean intersect(Ball ball) {
         float[] centerBall = ball.getCenter();
@@ -24,6 +30,9 @@ public class AcceleratedTile extends Tile {
         return false;
     }
 
+    /**
+     * The tile speed up the ball by 0.5 per frame.
+     */
     @Override
     public void interactWithBall(App app, Ball ball) {
         if (AccTile.UP.ordinal() == getState()) {

@@ -13,6 +13,9 @@ import java.util.*;
 import inkball.object.StaticObject;
 import inkball.state.Color;
 
+/**
+ * The main application of the game.
+ */
 public class App extends PApplet {
 
     public static final int CELLSIZE = 32; // 8;
@@ -84,6 +87,11 @@ public class App extends PApplet {
 
     JSONArray levels;
 
+    /**
+     * Read json file given by the directory
+     * 
+     * @param configPath
+     */
     public void getconfig(String configPath) {
         JSONObject json;
         json = loadJSONObject(configPath);
@@ -102,6 +110,12 @@ public class App extends PApplet {
         }
     }
 
+    /**
+     * Get sprites and return hashmap.
+     * 
+     * @param spriteNames
+     * @return
+     */
     public HashMap<String, PImage> loadSprites(String[] spriteNames) {
         HashMap<String, PImage> sprites = new HashMap<>();
         for (String spriteName : spriteNames) {
@@ -116,6 +130,9 @@ public class App extends PApplet {
         return sprites;
     }
 
+    /**
+     * Add hidden border, it should be bounced back when there is no wall.
+     */
     public void initializeHiddenWall() {
         // 4 hidden borders
         hiddenBorder.add(new Straightline(0, TOPBAR, WIDTH, TOPBAR));
@@ -124,6 +141,15 @@ public class App extends PApplet {
         hiddenBorder.add(new Straightline(0, HEIGHT, 0, TOPBAR));
     }
 
+    /**
+     * The function to add static object, given two consecutive character c1, c2
+     * from .txt file.
+     * 
+     * @param c1
+     * @param c2
+     * @param i
+     * @param current_row
+     */
     public void initializeStaticObject(char c1, char c2, int i, int current_row) {
         float x = i * CELLSIZE;
         float y = current_row * CELLSIZE + TOPBAR;
@@ -179,6 +205,11 @@ public class App extends PApplet {
         tiles.add(new Tile(objImg, i * CELLSIZE, current_row * CELLSIZE + TOPBAR));
     }
 
+    /**
+     * Setup the board and objects from .txt file
+     * 
+     * @param filename
+     */
     public void initializeBoard(String filename) {
         staticObj = new ArrayList<>();
         Balls = new ArrayList<>();
@@ -212,7 +243,6 @@ public class App extends PApplet {
 
     // Feel free to add any additional methods or attributes you want. Please put
     // classes in different files.
-
     public App() {
         this.configPath = "config.json";
     }
@@ -241,12 +271,12 @@ public class App extends PApplet {
         initializeHiddenWall();
     }
 
-    /**
-     * Receive key pressed signal from the keyboard.
-     */
     boolean gamestop;
     boolean controlPressed;
 
+    /**
+     * Receive key pressed signal from the keyboard.
+     */
     @Override
     public void keyPressed(KeyEvent event) {
         if (event.getKey() == ' ') {
@@ -271,6 +301,9 @@ public class App extends PApplet {
     public List<DrawingLine> lines = new ArrayList<>();
     private DrawingLine currentLine; // To keep track of the current line being drawn
 
+    /**
+     * Receive mouse pressed signal.
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == App.LEFT) {
@@ -288,6 +321,9 @@ public class App extends PApplet {
         }
     }
 
+    /**
+     * Receive mouse dragged signal.
+     */
     @Override
     public void mouseDragged(MouseEvent e) {
         if (e.getButton() == App.LEFT && !controlPressed) {
@@ -315,6 +351,9 @@ public class App extends PApplet {
         }
     }
 
+    /**
+     * Receive mouse released signal.
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         currentLine = new DrawingLine();
@@ -327,6 +366,9 @@ public class App extends PApplet {
     int spawnInterval;
     int timedTilesSecond;
 
+    /**
+     * When the current stage is cleared, read new config of the next stage.
+     */
     public void updateStageInfo() {
         JSONObject stageInfo = levels.getJSONObject(stage);
         String layout = stageInfo.getString("layout");
@@ -356,6 +398,9 @@ public class App extends PApplet {
         stageEnd = false;
     }
 
+    /**
+     * Draw the game every frame.
+     */
     @Override
     public void draw() {
         background(200); // clear previous info
@@ -397,7 +442,7 @@ public class App extends PApplet {
             // if the stage is end.
             stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0;
             if (stageEnd) {
-                if (stage <= levels.size()) {
+                if (stage < levels.size()) {
                     endStageDisplay();
                 } else {
                     text("=== ENDED ===", 260, 40);
@@ -410,33 +455,45 @@ public class App extends PApplet {
 
     private int[] locMovingWall1 = new int[] { 0, 0 };
     private int[] locMovingWall2 = new int[] { 17, 17 };
+    boolean gameCleared;
 
+    /**
+     * If the stage is cleared, the stage displays the moving yellow wall around the
+     * board.
+     */
     public void endStageDisplay() {
         // create the yellow wall and overwrite on the board instead.
         timeLeft--;
         TotalScore++;
         frameCount++;
 
-        String filename = "wall" + String.valueOf(Color.YELLOW.ordinal());
-        PImage wall = sprites.get(filename);
-        movingWall(wall);
+        movingWall();
 
         if (timeLeft <= 0) {
             if (stage < levels.size()) {
                 updateStageInfo();
             } else {
-                stage++;
+                gameCleared = true;
             }
         }
     }
 
-    public void movingWall(PImage wall) {
+    /**
+     * moving the yellow walls at the end of the stage.
+     */
+    public void movingWall() {
+        PImage wall = sprites.get("wall" + String.valueOf(Color.YELLOW.ordinal()));
         image(wall, locMovingWall1[0] * CELLSIZE, locMovingWall1[1] * CELLSIZE + TOPBAR);
         image(wall, locMovingWall2[0] * CELLSIZE, locMovingWall2[1] * CELLSIZE + TOPBAR);
         movingWallState(locMovingWall1);
         movingWallState(locMovingWall2);
     }
 
+    /**
+     * a logic to move yellow wall around the board
+     * 
+     * @param locMovingWall
+     */
     public void movingWallState(int[] locMovingWall) {
         int x = locMovingWall[0];
         int y = locMovingWall[1];
@@ -457,6 +514,9 @@ public class App extends PApplet {
     private int frameOffset;
     private boolean stageEnd;
 
+    /**
+     * A timer of each stage.
+     */
     public void timer() {
         textSize(20);
         fill(0);
@@ -481,6 +541,9 @@ public class App extends PApplet {
 
     private int slideCounter = 0;
 
+    /**
+     * Displays unloaded balls at the top-left of the GUI.
+     */
     public void drawLoadingBalls() {
         rect(loadingX, loadingY, loadingWidth, loadingHeight);
         int counter = 0;
@@ -513,6 +576,9 @@ public class App extends PApplet {
 
     }
 
+    /**
+     * If the game is not stopped and not finished, compute all objects each frame.
+     */
     public void gameContinue() {
         // ----------------------------------
         // display Board for current level:
@@ -601,11 +667,20 @@ public class App extends PApplet {
         }
     }
 
+    /**
+     * Display the score at the top-right
+     */
     public void score() {
         String score = "Score: " + Integer.toString(TotalScore);
         text(score, 450, App.TOPBAR - 40);
     }
 
+    /**
+     * The logic that calculates the score when the hole captures the ball.
+     * 
+     * @param ball
+     * @param hole
+     */
     public void calScore(Ball ball, StaticObject hole) {
         int ballState = ball.getState();
         int holeState = hole.getState();

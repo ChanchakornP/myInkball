@@ -4,6 +4,9 @@ import inkball.object.RectangleObject;
 import processing.core.PImage;
 import inkball.state.Color;
 
+/**
+ * The wall object, collidable with the ball.
+ */
 public class Wall extends RectangleObject {
         public int wallNumber = 0;
 

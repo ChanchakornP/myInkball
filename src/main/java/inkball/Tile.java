@@ -5,6 +5,9 @@ import java.util.HashMap;
 import inkball.object.RectangleObject;
 import processing.core.PImage;
 
+/**
+ * The tile object.
+ */
 public class Tile extends RectangleObject {
     public Tile(PImage objImg, float x, float y) {
         super(objImg, x, y);

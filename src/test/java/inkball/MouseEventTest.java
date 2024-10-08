@@ -4,6 +4,7 @@ import processing.core.PApplet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import processing.event.KeyEvent;
 import processing.event.MouseEvent;
@@ -11,15 +12,19 @@ import processing.event.MouseEvent;
 public class MouseEventTest {
     static App app;
 
-    @Test
-    public void testMouseEvent() {
-        // Test leftclick, rightclick, left-dragged, right-dragged, left-release,
-        // right-release
+    @BeforeAll
+    public static void setup() {
         app = new App();
-        // app.configPath = "test_config.json";
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
+        app.delay(2000);
+    }
+
+    @Test
+    public void testMouseEvent() {
+        // Test Create a line and remove a line by right click
         app.setup();
+        app.delay(300);
 
         // create a line
         Object tmp = new String("a");
@@ -36,6 +41,16 @@ public class MouseEventTest {
         MouseEvent mouseRight = new MouseEvent(tmp, 0, 0, 0, 100, 100, App.RIGHT, 0);
         app.mousePressed(mouseRight);
 
+    }
+
+    @Test
+    void testMouseEventTwo() {
+        // Test Create a line and remove a line by right dragged
+        app.setup();
+        app.delay(300);
+
+        Object tmp = new String("a");
+        MouseEvent mouseLeft = new MouseEvent(tmp, 0, 0, 0, 100, 100, App.LEFT, 0);
         // create a line
         app.mousePressed(mouseLeft);
         for (int i = 0; i < 50; i++) {
@@ -56,6 +71,17 @@ public class MouseEventTest {
         }
         app.mouseReleased(mouseRightMissed);
 
+    }
+
+    @Test
+    void testMouseEventThree() {
+        // Test Create a line and remove a line by left click + CTRL
+        app.setup();
+        app.delay(300);
+
+        Object tmp = new String("a");
+        MouseEvent mouseLeft = new MouseEvent(tmp, 0, 0, 0, 100, 100, App.LEFT, 0);
+
         // create a line
         app.mousePressed(mouseLeft);
         for (int i = 0; i < 50; i++) {
@@ -74,10 +100,7 @@ public class MouseEventTest {
                     0));
             app.delay(10);
         }
-        // app.delay(3000);
-
     }
-
 }
 
 // gradle run Run the program

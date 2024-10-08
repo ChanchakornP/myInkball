@@ -4,26 +4,35 @@ import processing.core.PApplet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import java.util.*;
 
 public class StageTest {
     static App app;
 
-    @Test
-    public void DrawStages() {
-        // Draw Every Stage in the config file
+    @BeforeAll
+    public static void setup() {
         app = new App();
-        app.configPath = "test_config.json";
         app.loop();
         PApplet.runSketch(new String[] { "App" }, app);
+        app.configPath = "test_config.json";
+        app.delay(500);
+    }
+
+    @Test
+    public void DrawStages() {
         app.setup();
-        // app.delay(100);
+        app.delay(300);
         int numStages = app.levels.size();
-        for (int i = 0; i < numStages - 1; i++) {
-            app.stage = i;
-            app.updateStageInfo();
-            app.delay(5000);
+
+        for (int i = 0; i < numStages; i++) {
+            app.delay(10);
+            app.BallsInQueue = new LinkedList<>();
+            app.Balls = new LinkedList<>();
+            app.timeLimit = 1;
+            app.delay(2000);
         }
+        // app.delay(2000);
     }
 }

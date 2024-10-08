@@ -4,6 +4,11 @@ import java.util.*;
 import inkball.object.StaticObject;
 import processing.core.PVector;
 
+/**
+ * The hidden object, used as hidden border when there is no walls. The balls
+ * cannot move outside the board.
+ * 
+ */
 public class Straightline extends StaticObject {
     // work around for now to handle the stage without the walls.
     // create hidden line around the stage.

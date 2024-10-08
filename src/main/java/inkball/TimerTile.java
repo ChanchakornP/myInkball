@@ -3,6 +3,10 @@ package inkball;
 import java.util.HashMap;
 import processing.core.PImage;
 
+/**
+ * The timer tile. At the start, the ball can collide the tile and be bounced
+ * back. As the time pass, the ball can pass through it.
+ */
 public class TimerTile extends Tile {
 
     public TimerTile(HashMap<String, PImage> localSprites, int state, float x, float y) {

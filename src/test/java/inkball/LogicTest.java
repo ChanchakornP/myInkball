@@ -1,6 +1,8 @@
 package inkball;
 
 import processing.core.PApplet;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
@@ -12,14 +14,17 @@ import inkball.state.Color;
 public class LogicTest {
     static App app;
 
+    @BeforeAll
+    public static void setup() {
+        app = new App();
+        app.loop();
+        PApplet.runSketch(new String[] { "App" }, app);
+        app.delay(2000);
+    }
+
     // Create collision test cases of a ball and a wall
     @Test
     public void testBallWallIntersect() {
-        app = new App();
-        // app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         // Create a ball object at topleft position is 32, 32
@@ -136,11 +141,7 @@ public class LogicTest {
     // Create ball bouncing test cases
     @Test
     public void testBallWallInteraction() {
-        app = new App();
         app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
         Ball ball;
         float[] ballVel;
@@ -230,11 +231,6 @@ public class LogicTest {
     // Create score calculation logic
     @Test
     public void testUpdatingScore() {
-        app = new App();
-        // app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         Ball greyBall, orangeBall, blueBall, greenBall, yellowBall;
@@ -323,11 +319,6 @@ public class LogicTest {
     // test lineIntersect
     @Test
     public void testBallLineIntersect() {
-        app = new App();
-        // app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         Ball ball;
@@ -388,11 +379,6 @@ public class LogicTest {
     // test lineBouncing
     @Test
     public void testBallLineInteraction() {
-        app = new App();
-        app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
         Ball ball;
         float[] ballVel;
@@ -437,12 +423,6 @@ public class LogicTest {
 
     @Test
     public void testBallTimerTileIntersect() {
-        // Create collision test cases of a ball and a TimerTile
-        app = new App();
-        // app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         // Create a ball object at topleft position is 32, 32
@@ -465,12 +445,6 @@ public class LogicTest {
 
     @Test
     public void testBallTimerTileInteract() {
-        // Create collision test cases of a ball and a TimerTile
-        app = new App();
-        // app.configPath = "test_config.json";
-
-        app.loop();
-        PApplet.runSketch(new String[] { "App" }, app);
         app.setup();
 
         // Create a ball object at topleft position is 32, 32

@@ -1,5 +1,9 @@
 package inkball.state;
 
+/**
+ * The enum of the color. It stores reward and penalty when the ball is
+ * captured.
+ */
 public enum Color {
     GREY(0, 0),
     ORANGE(0, 0),
