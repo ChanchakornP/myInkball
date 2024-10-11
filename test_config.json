@@ -2,7 +2,6 @@
   "levels": [
     {
       "layout": "testCollision.txt",
-      "time": 120,
       "spawn_interval": 0.1,
       "score_increase_from_hole_capture_modifier": 1.0,
       "score_decrease_from_wrong_hole_modifier": 1.0,
