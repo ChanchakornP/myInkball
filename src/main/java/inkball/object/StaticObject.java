@@ -22,6 +22,7 @@ public abstract class StaticObject {
          * intersected
          * 
          * @param ball the ball object
+         * @param app  the game application
          */
         public abstract void interactWithBall(App app, Ball ball);
 
@@ -31,19 +32,20 @@ public abstract class StaticObject {
          * 
          * @param ball the ball object
          */
-        public abstract void interactWithBall(App app, List<Ball> ball, String BallColor);
 
         /**
          * The method computes whether the object and the ball are intersected
          * 
          * @param ball the ball object
+         * @return the condition determines whether this object have to interact with
+         *         the ball or not
          */
         public abstract boolean intersect(Ball ball);
 
         /**
          * Draw the object in the app.
          * 
-         * @param app
+         * @param app game application
          */
         public void draw(App app) {
                 app.image(this.objImg, position[0], position[1]);
@@ -61,6 +63,7 @@ public abstract class StaticObject {
         /**
          * get the state of the object.
          * 
+         * @return return the state of this object
          */
         public int getState() {
                 return state;
@@ -69,6 +72,7 @@ public abstract class StaticObject {
         /**
          * get the object name of the app.
          * 
+         * @return return this object name
          */
         public String getObjName() {
                 return this.objName;
@@ -77,6 +81,7 @@ public abstract class StaticObject {
         /**
          * get the position of the object in the app.
          * 
+         * @return return the top-left position of this object
          */
         public float[] getPosition() {
                 return position;
@@ -85,6 +90,7 @@ public abstract class StaticObject {
         /**
          * get the counter of the object.
          * 
+         * @return return the counter.
          */
         public int getCounter() {
                 return objCounter;

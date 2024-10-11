@@ -26,15 +26,20 @@ public class KeyEventTest {
         KeyEvent keyStop = new KeyEvent(tmp, (long) 0, 0, 0, ' ', 0, false);
         app.keyPressed(keyStop);
         app.keyReleased(keyStop);
-        // app.delay(1000);
+        app.redraw();
+        app.delay(1000);
         app.keyPressed(keyStop);
         app.keyReleased(keyStop);
 
         // Test restarting
         KeyEvent keyRestart = new KeyEvent(tmp, (long) 0, 0, 0, 'r', 0, false);
+        app.loop();
+        app.delay(1000);
         app.keyPressed(keyRestart);
         app.keyReleased(keyRestart);
-        // app.delay(1000);
+        app.delay(1000);
+        app.noLoop();
+        app.delay(1000);
 
         // Test CTRL
         KeyEvent keyCTRL = new KeyEvent(tmp, (long) 0, 0, 0, '0', KeyEvent.CTRL,

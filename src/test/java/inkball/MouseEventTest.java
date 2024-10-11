@@ -17,6 +17,7 @@ public class MouseEventTest {
         app = new App();
         app.noLoop();
         PApplet.runSketch(new String[] { "--headless", "App" }, app);
+        app.delay(1000);
     }
 
     @Test

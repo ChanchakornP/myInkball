@@ -29,9 +29,6 @@ public class Straightline extends StaticObject {
         ball.reflect(normVec);
     }
 
-    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
-    }
-
     public boolean intersect(Ball ball) {
         float[] ballPos = ball.nextFramePosition();
         float radius = ball.getRadius();

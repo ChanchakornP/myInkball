@@ -16,9 +16,6 @@ public abstract class RectangleObject extends StaticObject {
 
     public abstract boolean intersect(Ball ball);
 
-    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
-    }
-
     public void setupLocalSprites(HashMap<String, PImage> localSprites) {
         this.localSprites = localSprites;
     }
@@ -188,61 +185,45 @@ public abstract class RectangleObject extends StaticObject {
             PVector normVec;
             if (ballVel[0] > 0 && ballVel[1] < 0) {
                 normVec = new PVector(0, -1).normalize();
-                ball.reflect(normVec);
-            } else if (ballVel[0] < 0 && ballVel[1] < 0) {
-                normVec = new PVector(1, 1).normalize();
-                ball.reflect(normVec);
             } else if (ballVel[0] < 0 && ballVel[1] > 0) {
                 normVec = new PVector(-1, 0).normalize();
-                ball.reflect(normVec);
             } else {
-                ball.inverseVel();
+                normVec = new PVector(1, 1).normalize();
             }
+            ball.reflect(normVec);
         } else if (intersectTopRight(ball)) {
             float[] ballVel = ball.getVelocity();
             PVector normVec;
-            if (ballVel[0] > 0 && ballVel[1] < 0) {
-                normVec = new PVector(-1, 1).normalize();
-                ball.reflect(normVec);
-            } else if (ballVel[0] < 0 && ballVel[1] < 0) {
+            if (ballVel[0] < 0 && ballVel[1] < 0) {
                 normVec = new PVector(0, 1).normalize();
-                ball.reflect(normVec);
             } else if (ballVel[0] > 0 && ballVel[1] > 0) {
                 normVec = new PVector(-1, 0).normalize();
-                ball.reflect(normVec);
             } else {
-                ball.inverseVel();
+                normVec = new PVector(-1, 1).normalize();
             }
+            ball.reflect(normVec);
         } else if (intersectBottomLeft(ball)) {
             float[] ballVel = ball.getVelocity();
             PVector normVec;
             if (ballVel[0] > 0 && ballVel[1] > 0) {
                 normVec = new PVector(0, 1).normalize();
-                ball.reflect(normVec);
             } else if (ballVel[0] < 0 && ballVel[1] < 0) {
                 normVec = new PVector(1, 0).normalize();
-                ball.reflect(normVec);
-            } else if (ballVel[0] < 0 && ballVel[1] > 0) {
-                normVec = new PVector(1, -1).normalize();
-                ball.reflect(normVec);
             } else {
-                ball.inverseVel();
+                normVec = new PVector(1, -1).normalize();
             }
+            ball.reflect(normVec);
         } else if (intersectBottomRight(ball)) {
             float[] ballVel = ball.getVelocity();
             PVector normVec;
-            if (ballVel[0] > 0 && ballVel[1] > 0) {
-                normVec = new PVector(-1, -1).normalize();
-                ball.reflect(normVec);
-            } else if (ballVel[0] < 0 && ballVel[1] > 0) {
+            if (ballVel[0] < 0 && ballVel[1] > 0) {
                 normVec = new PVector(0, 1).normalize();
-                ball.reflect(normVec);
             } else if (ballVel[0] > 0 && ballVel[1] < 0) {
                 normVec = new PVector(-1, 0).normalize();
-                ball.reflect(normVec);
             } else {
-                ball.inverseVel();
+                normVec = new PVector(-1, -1).normalize();
             }
+            ball.reflect(normVec);
         }
     }
 

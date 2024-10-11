@@ -34,7 +34,7 @@ public class LogicTest {
         Ball ball = new Ball(app.sprites.get("ball0"), 32, 32);
         float[] ballVel = new float[] { 2, 2 };
         ball.setVel(ballVel);
-        StaticObject wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
+        Wall wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
 
         // ********************************************** //
@@ -136,7 +136,7 @@ public class LogicTest {
         wall = new Wall(app.sprites.get("wall0"), 0, 32, 32);
         assertEquals(wall.intersect(ball), true);
         // ********************************************** //
-        app.delay(1000);
+        // app.delay(1000);
     }
 
     // Create ball bouncing test cases
@@ -145,7 +145,7 @@ public class LogicTest {
         app.setup();
         Ball ball;
         float[] ballVel;
-        StaticObject wall;
+        Wall wall;
         // ********************************************** //
         // The ball moves to the right, should be bounced to left.
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
@@ -226,8 +226,32 @@ public class LogicTest {
         wall.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 0, 2, 0 }); // perpendicular moeves
         // ********************************************** //
+    }
 
-        app.delay(1000);
+    @Test
+    public void testHoleLogic() {
+
+        Ball yellowBall;
+        Hole greyHole;
+        HashMap<String, PImage> ballSpriteMap = app.sprites;
+
+        yellowBall = new Ball(ballSpriteMap, Color.YELLOW.ordinal(), 16, 16);
+
+        HashMap<String, PImage> holeSpriteMap = app.sprites;
+        greyHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.GREY.ordinal())), Color.GREY.ordinal(), 0,
+                0);
+
+        assertArrayEquals(yellowBall.getCenter(), new float[] { 28, 28 }); // top left = 16, center of the ball is at 16
+                                                                           // + 12 = 28
+        assertArrayEquals(greyHole.center, new float[] { 32, 32 });
+        assertEquals(yellowBall.width, 24);
+        assertEquals(greyHole.intersect(yellowBall), true);
+
+        // The hole interact with the ball, set the ball flag to be "Captured"
+        assertEquals(yellowBall.getCaptured(), false);
+        greyHole.interactWithBall(app, yellowBall);
+        assertEquals(yellowBall.width < 24, true); // The size of the ball near the hole should be decrease
+        assertEquals(yellowBall.getCaptured(), true);
     }
 
     // Create score calculation logic
@@ -236,14 +260,14 @@ public class LogicTest {
         app.setup();
 
         Ball greyBall, orangeBall, blueBall, greenBall, yellowBall;
-        StaticObject greyHole, orangeHole, blueHole, greenHole, yellowHole;
+        Hole greyHole, orangeHole, blueHole, greenHole, yellowHole;
         HashMap<String, PImage> ballSpriteMap = app.sprites;
 
-        greyBall = new Ball(ballSpriteMap, Color.GREY.ordinal(), 0, 0);
-        orangeBall = new Ball(ballSpriteMap, Color.ORANGE.ordinal(), 0, 0);
-        blueBall = new Ball(ballSpriteMap, Color.BLUE.ordinal(), 0, 0);
-        greenBall = new Ball(ballSpriteMap, Color.GREEN.ordinal(), 0, 0);
-        yellowBall = new Ball(ballSpriteMap, Color.YELLOW.ordinal(), 0, 0);
+        greyBall = new Ball(ballSpriteMap, Color.GREY.ordinal(), 16, 16);
+        orangeBall = new Ball(ballSpriteMap, Color.ORANGE.ordinal(), 16, 16);
+        blueBall = new Ball(ballSpriteMap, Color.BLUE.ordinal(), 16, 16);
+        greenBall = new Ball(ballSpriteMap, Color.GREEN.ordinal(), 16, 16);
+        yellowBall = new Ball(ballSpriteMap, Color.YELLOW.ordinal(), 16, 16);
 
         HashMap<String, PImage> holeSpriteMap = app.sprites;
         greyHole = new Hole(holeSpriteMap.get("hole" + String.valueOf(Color.GREY.ordinal())), Color.GREY.ordinal(), 0,
@@ -315,10 +339,7 @@ public class LogicTest {
 
         // grayHole
         app.calScore(yellowBall, greyHole);
-        assertEquals(app.TotalScore, 100); // Cannot below than zero
-
-        app.delay(1000);
-
+        assertEquals(app.TotalScore, 100);
     }
 
     // test lineIntersect
@@ -380,7 +401,7 @@ public class LogicTest {
         assertEquals(testedLine.intersect(ball), true);
         // ********************************************** //
 
-        app.delay(1000);
+        // app.delay(1000);
 
     }
 
@@ -403,7 +424,7 @@ public class LogicTest {
         ball.setVel(ballVel);
         testedLine.interactWithBall(app, ball);
         assertArrayEquals(ball.getVelocity(), new float[] { 0, -1, 0 }); // perpendicular moeves
-        app.delay(1000);
+        // app.delay(1000);
 
     }
 
@@ -470,7 +491,7 @@ public class LogicTest {
                 "timer_tile4" };
         HashMap<String, PImage> timerTileSpritesMap = app.loadSprites(timerTileSprites);
         int state = 4;
-        StaticObject wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
+        Tile wall = new TimerTile(timerTileSpritesMap, state, 32, 32);
 
         ball = new Ball(app.sprites.get("ball0"), 7, 32);
         ballVel = new float[] { 2, 2 };

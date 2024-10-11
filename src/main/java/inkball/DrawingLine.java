@@ -39,7 +39,7 @@ public class DrawingLine extends StaticObject {
     /**
      * Create sub-line object by given points.
      * 
-     * @param points
+     * @param points The arrays of points that will forming a single line.
      */
     public void addLine(List<int[]> points) {
 
@@ -79,9 +79,6 @@ public class DrawingLine extends StaticObject {
         }
     }
 
-    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
-    }
-
     public boolean intersect(Ball ball) {
         for (PVector[] line : lines) {
             if (lineIntersect(ball, line)) {
@@ -110,7 +107,7 @@ public class DrawingLine extends StaticObject {
      * 
      * @param ball     ball object
      * @param lineVecs sub-lines of this object.
-     * @return
+     * @return Determine whether the ball crashs the line.
      */
     public boolean lineIntersect(Ball ball, PVector[] lineVecs) {
         PVector ballPos = ball.nextFramePositionVec();

@@ -90,7 +90,7 @@ public class App extends PApplet {
     /**
      * Read json file given by the directory
      * 
-     * @param configPath
+     * @param configPath The directory of json file in String format.
      */
     public void getconfig(String configPath) {
         JSONObject json;
@@ -113,8 +113,8 @@ public class App extends PApplet {
     /**
      * Get sprites and return hashmap.
      * 
-     * @param spriteNames
-     * @return
+     * @param spriteNames the array of sprites name
+     * @return return the hashmap of the string and PImage
      */
     public HashMap<String, PImage> loadSprites(String[] spriteNames) {
         HashMap<String, PImage> sprites = new HashMap<>();
@@ -145,10 +145,10 @@ public class App extends PApplet {
      * The function to add static object, given two consecutive character c1, c2
      * from .txt file.
      * 
-     * @param c1
-     * @param c2
-     * @param i
-     * @param current_row
+     * @param c1          the character in the text file
+     * @param c2          previous character of c1
+     * @param i           column position
+     * @param current_row row position
      */
     public void initializeStaticObject(char c1, char c2, int i, int current_row) {
         float x = i * CELLSIZE;
@@ -208,7 +208,7 @@ public class App extends PApplet {
     /**
      * Setup the board and objects from .txt file
      * 
-     * @param filename
+     * @param filename The filename.
      */
     public void initializeBoard(String filename) {
         staticObj = new ArrayList<>();
@@ -262,14 +262,14 @@ public class App extends PApplet {
 
     @Override
     public void setup() {
+        stage = 0;
+        TotalScore = 0;
+        controlPressed = false;
         frameRate(FPS);
         getSprite();
         getconfig(this.configPath);
         updateStageInfo();
         initializeHiddenWall();
-        stage = 0;
-        TotalScore = 0;
-        controlPressed = false;
 
     }
 
@@ -403,7 +403,6 @@ public class App extends PApplet {
             timedTilesSecond = 10;
         }
         spawnCounter = spawnInterval;
-        stage++;
         frameCount = 0;
         frameOffset = 0;
         stageEnd = false;
@@ -453,7 +452,7 @@ public class App extends PApplet {
             // if the stage is end.
             stageEnd = BallsInQueue.size() == 0 && Balls.size() == 0;
             if (stageEnd) {
-                if (stage < levels.size()) {
+                if (stage < levels.size() - 1 || timeLeft > 0) {
                     endStageDisplay();
                 } else {
                     text("=== ENDED ===", 260, 40);
@@ -481,7 +480,8 @@ public class App extends PApplet {
         movingWall();
 
         if (timeLeft <= 0) {
-            if (stage < levels.size()) {
+            if (stage < levels.size() - 1) {
+                stage++;
                 updateStageInfo();
             } else {
                 gameCleared = true;
@@ -503,7 +503,7 @@ public class App extends PApplet {
     /**
      * a logic to move yellow wall around the board
      * 
-     * @param locMovingWall
+     * @param locMovingWall The two yellow tiles that are moving around the board
      */
     public void movingWallState(int[] locMovingWall) {
         int x = locMovingWall[0];
@@ -690,8 +690,8 @@ public class App extends PApplet {
     /**
      * The logic that calculates the score when the hole captures the ball.
      * 
-     * @param ball
-     * @param hole
+     * @param ball The ball object
+     * @param hole The hole object
      */
     public void calScore(Ball ball, StaticObject hole) {
         int ballState = ball.getState();

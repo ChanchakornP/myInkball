@@ -16,9 +16,6 @@ public class EntryPoint extends RectangleObject {
     public void interactWithBall(App app, Ball ball) {
     }
 
-    public void interactWithBall(App app, List<Ball> ball, String BallColor) {
-    }
-
     public void updateState() {
     }
 
