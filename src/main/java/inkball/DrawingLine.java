@@ -14,6 +14,7 @@ public class DrawingLine extends StaticObject {
     private List<PVector[]> lines = new ArrayList<>();
     private List<int[]> points = new ArrayList<>();
 
+    @Override
     public void draw(App app) {
         for (PVector[] line : lines) {
             app.line(line[0].x, line[0].y, line[1].x, line[1].y);
@@ -27,6 +28,7 @@ public class DrawingLine extends StaticObject {
      * @param x x - position
      * @param y y - position
      */
+
     public void addPoints(int x, int y) {
         points.add(new int[] { x, y });
         if (points.size() > 4) {
@@ -54,6 +56,7 @@ public class DrawingLine extends StaticObject {
         lines.add(tmp);
     }
 
+    @Override
     public void interactWithBall(App app, Ball ball) {
         for (PVector[] line : lines) {
             if (lineIntersect(ball, line)) {
@@ -79,6 +82,7 @@ public class DrawingLine extends StaticObject {
         }
     }
 
+    @Override
     public boolean intersect(Ball ball) {
         for (PVector[] line : lines) {
             if (lineIntersect(ball, line)) {

@@ -8,8 +8,6 @@ import inkball.state.Color;
  * The wall object, collidable with the ball.
  */
 public class Wall extends RectangleObject {
-        public int wallNumber = 0;
-
         public Wall(PImage objImg, int state, float x, float y) {
                 super(objImg, x, y);
                 updateState(state);

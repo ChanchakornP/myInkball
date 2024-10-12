@@ -10,15 +10,6 @@ import java.util.*;
 public abstract class RectangleObject extends StaticObject {
     public float width, height;
     public float x1, x2, y1, y2;
-    public HashMap<String, PImage> localSprites = new HashMap<>();
-
-    public abstract void interactWithBall(App app, Ball ball);
-
-    public abstract boolean intersect(Ball ball);
-
-    public void setupLocalSprites(HashMap<String, PImage> localSprites) {
-        this.localSprites = localSprites;
-    }
 
     public RectangleObject(PImage objImage, float x, float y) {
         this.objImg = objImage;
@@ -34,7 +25,7 @@ public abstract class RectangleObject extends StaticObject {
 
     // for ball, it needs to store images
     public RectangleObject(HashMap<String, PImage> localSprites, int state, float x, float y) {
-        setupLocalSprites(localSprites);
+        this.localSprites = localSprites;
         updateState(state);
     }
 
@@ -227,7 +218,7 @@ public abstract class RectangleObject extends StaticObject {
         }
     }
 
-    public float[][] getObjectLines() {
+    private float[][] getObjectLines() {
         return new float[][] {
                 { x1, y1, x2, y1 },
                 { x2, y1, x2, y2 },

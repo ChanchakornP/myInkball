@@ -20,17 +20,21 @@ public class App extends PApplet {
 
     public static final int CELLSIZE = 32; // 8;
     public static final int CELLHEIGHT = 32;
-
-    public static final int CELLAVG = 32;
     public static final int TOPBAR = 64;
     public static int WIDTH = 576; // CELLSIZE*BOARD_WIDTH;
     public static int HEIGHT = 640; // BOARD_HEIGHT*CELLSIZE+TOPBAR;
     public static final int BOARD_WIDTH = WIDTH / CELLSIZE;
     public static final int BOARD_HEIGHT = (HEIGHT - TOPBAR) / CELLSIZE;
 
-    public static final int INITIAL_PARACHUTES = 1;
-
     public static final int FPS = 30;
+
+    // Loading balls position on top left
+    public static final int BALLSINQUEUEPADDING = 35;
+    public static final int LOADINGX = 40;
+    public static final int LOADINGY = 15;
+    public static final int LOADINGWIDTH = 175;
+    public static final int LOADINGHEIGHT = 35;
+    public static final int LOADINGPAD = 3;
 
     public String configPath;
 
@@ -42,8 +46,29 @@ public class App extends PApplet {
     public List<Tile> tiles = new ArrayList<>();
     public List<Ball> Balls = new ArrayList<>();
     public Queue<String> BallsInQueue = new LinkedList<>();
-    private int BallsInQueuePadding = 35;
+    public List<DrawingLine> lines = new ArrayList<>();
+    private DrawingLine currentLine; // To keep track of the current line being drawn
+
     public int TotalScore;
+    public boolean gamestop;
+    public boolean controlPressed;
+    private float spawnCounter;
+    public float timeLeft;
+    private int frameCount;
+    private int frameOffset;
+    private boolean stageEnd;
+    private int slideCounter = 0;
+
+    public int stage;
+    public float incMod;
+    public float decMod;
+    public int timeLimit;
+    public int spawnInterval;
+    public int timedTilesSecond;
+
+    private int[] locMovingWall1 = new int[] { 0, 0 };
+    private int[] locMovingWall2 = new int[] { 17, 17 };
+    public boolean gameCleared;
 
     public void getSprite() {
         String[] local_sprites = new String[] {
@@ -273,9 +298,6 @@ public class App extends PApplet {
 
     }
 
-    boolean gamestop;
-    boolean controlPressed;
-
     /**
      * Receive key pressed signal from the keyboard.
      */
@@ -299,9 +321,6 @@ public class App extends PApplet {
             controlPressed = false;
         }
     }
-
-    public List<DrawingLine> lines = new ArrayList<>();
-    private DrawingLine currentLine; // To keep track of the current line being drawn
 
     /**
      * Receive mouse pressed signal.
@@ -369,13 +388,6 @@ public class App extends PApplet {
     public void mouseReleased(MouseEvent e) {
         currentLine = new DrawingLine();
     }
-
-    int stage;
-    float incMod;
-    float decMod;
-    int timeLimit;
-    int spawnInterval;
-    int timedTilesSecond;
 
     /**
      * When the current stage is cleared, read new config of the next stage.
@@ -463,10 +475,6 @@ public class App extends PApplet {
         }
     }
 
-    private int[] locMovingWall1 = new int[] { 0, 0 };
-    private int[] locMovingWall2 = new int[] { 17, 17 };
-    boolean gameCleared;
-
     /**
      * If the stage is cleared, the stage displays the moving yellow wall around the
      * board.
@@ -519,12 +527,6 @@ public class App extends PApplet {
         }
     }
 
-    private float spawnCounter;
-    public float timeLeft;
-    private int frameCount;
-    private int frameOffset;
-    private boolean stageEnd;
-
     /**
      * A timer of each stage.
      */
@@ -544,34 +546,26 @@ public class App extends PApplet {
         }
     }
 
-    private int loadingX = 40;
-    private int loadingY = 15;
-    private int loadingWidth = 175;
-    private int loadingHeight = 35;
-    private int loadingPad = 3;
-
-    private int slideCounter = 0;
-
     /**
      * Displays unloaded balls at the top-left of the GUI.
      */
     public void drawLoadingBalls() {
         fill(0);
-        rect(loadingX, loadingY, loadingWidth, loadingHeight);
+        rect(LOADINGX, LOADINGY, LOADINGWIDTH, LOADINGHEIGHT);
         int counter = 0;
         // draw balls in the queue
         for (String s : BallsInQueue) {
             int colorCode = Color.valueOf(s.toUpperCase()).ordinal();
             String filename = "ball" + String.valueOf(colorCode);
             PImage ball = sprites.get(filename);
-            image(ball, loadingX + loadingPad + (BallsInQueuePadding * counter) + slideCounter, loadingY + loadingPad);
+            image(ball, LOADINGX + LOADINGPAD + (BALLSINQUEUEPADDING * counter) + slideCounter, LOADINGY + LOADINGPAD);
             counter++;
             if (counter == 5) {
                 break;
             }
         }
         fill(200);
-        rect(loadingX + loadingWidth, loadingY, loadingX + loadingWidth + 30, loadingHeight, 0);
+        rect(LOADINGX + LOADINGWIDTH, LOADINGY, LOADINGX + LOADINGWIDTH + 30, LOADINGHEIGHT, 0);
 
         // draw spawning time
         String formattedString;
@@ -584,7 +578,7 @@ public class App extends PApplet {
             slideCounter--;
         }
         fill(0);
-        text(formattedString, loadingX + loadingWidth + 5, loadingY + loadingHeight / 2);
+        text(formattedString, LOADINGX + LOADINGWIDTH + 5, LOADINGY + LOADINGHEIGHT / 2);
 
     }
 
@@ -651,7 +645,7 @@ public class App extends PApplet {
             List<StaticObject> spawners = new ArrayList<>();
             for (StaticObject o : staticObj) {
                 if (o.getObjName().equals("EntryPoint")) {
-                    slideCounter = BallsInQueuePadding;
+                    slideCounter = BALLSINQUEUEPADDING;
                     spawners.add(o);
                 }
             }

@@ -20,6 +20,7 @@ public class Ball extends DynamicObject {
         return captured;
     }
 
+    @Override
     public void move() {
         float[] velArray = vel.array();
         float newX = this.position[0] + velArray[0];
@@ -28,25 +29,21 @@ public class Ball extends DynamicObject {
         this.position[1] = newY;
     }
 
-    public float[] getVelocity() {
-        return vel.array();
-    }
-
-    public PVector getVelocityVec() {
-        return vel;
-    }
-
     public Ball(PImage objImg, float x, float y) {
-        super(objImg, x, y);
+        this.objImg = objImg;
+        position[0] = x;
+        position[1] = y;
+        this.width = objImg.width;
+        this.height = objImg.height;
+
         Random rand = new Random();
-        // random vel -2 or 2
         int randVelX = rand.nextInt(2) * 4 - 2;
         int randVelY = rand.nextInt(2) * 4 - 2;
         setVel(new float[] { randVelX, randVelY });
     }
 
     public Ball(HashMap<String, PImage> localSprites, int state, float x, float y) {
-        super(localSprites, state, x, y);
+        this.localSprites = localSprites;
         PImage objImage = localSprites.get("ball" + String.valueOf(state));
         updateState(state);
         position[0] = x;
@@ -102,8 +99,9 @@ public class Ball extends DynamicObject {
         vel = newVelocity;
     }
 
+    @Override
     public void draw(App app) {
-        PImage objImgTmp = getLocalSprites().get("ball" + String.valueOf(getState())).copy();
+        PImage objImgTmp = localSprites.get("ball" + String.valueOf(getState())).copy();
         if (this.width < 28) {
             objImgTmp.resize((int) this.width, (int) this.height);
         }

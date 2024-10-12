@@ -12,10 +12,9 @@ public abstract class StaticObject {
         protected PImage objImg;
         protected String objName = "obj";
         protected float[] position = new float[2];
+        protected HashMap<String, PImage> localSprites = new HashMap<>();
         private int state;
         private int objCounter;
-
-        public HashMap<String, PImage> localSprites = new HashMap<>();
 
         /**
          * The method determines the behaviours if both the ball and object are

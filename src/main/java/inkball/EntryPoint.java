@@ -13,17 +13,12 @@ public class EntryPoint extends RectangleObject {
         objName = "EntryPoint";
     }
 
-    public void interactWithBall(App app, Ball ball) {
-    }
-
-    public void updateState() {
-    }
-
+    @Override
     public boolean intersect(Ball ball) {
         return false;
     }
 
-    public boolean intersectEdge(Ball ball) {
-        return false;
+    @Override
+    public void interactWithBall(App app, Ball ball) {
     }
 }

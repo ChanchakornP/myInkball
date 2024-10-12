@@ -25,10 +25,12 @@ public class Straightline extends StaticObject {
         this.normVec = new PVector(-dy, dx).normalize();
     }
 
+    @Override
     public void interactWithBall(App app, Ball ball) {
         ball.reflect(normVec);
     }
 
+    @Override
     public boolean intersect(Ball ball) {
         float[] ballPos = ball.nextFramePosition();
         float radius = ball.getRadius();
