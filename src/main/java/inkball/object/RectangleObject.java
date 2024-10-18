@@ -7,6 +7,9 @@ import processing.core.PVector;
 
 import java.util.*;
 
+/**
+ * The rectangle object, interactable with the ball.
+ */
 public abstract class RectangleObject extends StaticObject {
     public float width, height;
     public float x1, x2, y1, y2;

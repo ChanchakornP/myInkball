@@ -5,6 +5,10 @@ import processing.core.PImage;
 import processing.core.PVector;
 import java.util.HashMap;
 
+/**
+ * The dynamic object of the game.
+ */
+
 public abstract class DynamicObject {
     protected PImage objImg;
     protected PVector vel = new PVector(2, 2);

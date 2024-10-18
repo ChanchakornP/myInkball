@@ -35,13 +35,4 @@ public class TimerTest {
         app.loop();
         app.delay(2000);
     }
-
-    // @Test
-    // public void noConfigFile() {
-    // // Test load not found config
-    // app.setup();
-    // app.delay(1000);
-
-    // app.configPath = "nofile.json";
-    // }
 }

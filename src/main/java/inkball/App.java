@@ -50,6 +50,7 @@ public class App extends PApplet {
     private DrawingLine currentLine; // To keep track of the current line being drawn
 
     public int TotalScore;
+    public int StageBufferScore;
     public boolean gamestop;
     public boolean controlPressed;
     private float spawnCounter;
@@ -306,7 +307,13 @@ public class App extends PApplet {
         if (event.getKey() == ' ') {
             gamestop = ((gamestop || true) && !(gamestop && true)); // toggle
         } else if (event.getKey() == 'r') {
-            setup();
+            // end the game
+            if (BallsInQueue.size() == 0 && Balls.size() == 0 && stage == levels.size() - 1) {
+                setup();
+            } else {
+                TotalScore = StageBufferScore;
+                updateStageInfo();
+            }
         } else if (event.getKeyCode() == KeyEvent.CTRL) {
             controlPressed = true;
         }
@@ -418,6 +425,8 @@ public class App extends PApplet {
         frameCount = 0;
         frameOffset = 0;
         stageEnd = false;
+        locMovingWall1 = new int[] { 0, 0 };
+        locMovingWall2 = new int[] { 17, 17 };
     }
 
     /**
@@ -490,6 +499,7 @@ public class App extends PApplet {
         if (timeLeft <= 0) {
             if (stage < levels.size() - 1) {
                 stage++;
+                StageBufferScore = TotalScore;
                 updateStageInfo();
             } else {
                 gameCleared = true;
@@ -504,8 +514,11 @@ public class App extends PApplet {
         PImage wall = sprites.get("wall" + String.valueOf(Color.YELLOW.ordinal()));
         image(wall, locMovingWall1[0] * CELLSIZE, locMovingWall1[1] * CELLSIZE + TOPBAR);
         image(wall, locMovingWall2[0] * CELLSIZE, locMovingWall2[1] * CELLSIZE + TOPBAR);
-        movingWallState(locMovingWall1);
-        movingWallState(locMovingWall2);
+        // 0.067 = 15 FPS, currently is 30
+        if (frameCount % 2 == 0) {
+            movingWallState(locMovingWall1);
+            movingWallState(locMovingWall2);
+        }
     }
 
     /**
@@ -590,6 +603,33 @@ public class App extends PApplet {
         // display Board for current level:
         // ----------------------------------
         frameCount++;
+        // inefficient here. Ignore it for now.
+        if (BallsInQueue.size() > 0 && spawnCounter <= 0) {
+            List<StaticObject> spawners = new ArrayList<>();
+            for (StaticObject o : staticObj) {
+                if (o.getObjName().equals("EntryPoint")) {
+                    slideCounter = BALLSINQUEUEPADDING;
+                    spawners.add(o);
+                }
+            }
+            // Check if there is a spawner
+            if (spawners.size() > 0) {
+                Random random = new Random();
+
+                StaticObject randomEntryPoint = spawners.get(random.nextInt(spawners.size()));
+
+                String ballColor = BallsInQueue.remove();
+                String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
+                HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
+                float[] spawnPos = randomEntryPoint.getPosition();
+                Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
+                        spawnPos[0], spawnPos[1]);
+                Balls.add(obj);
+                frameOffset = frameCount;
+                spawnCounter = spawnInterval;
+            }
+        }
+
         spawnCounter = spawnInterval - (float) (frameCount - frameOffset) / FPS;
         for (Ball ball : Balls) {
             for (Straightline line : hiddenBorder) {
@@ -637,33 +677,6 @@ public class App extends PApplet {
                 } else {
                     o.incCounter();
                 }
-            }
-        }
-
-        // inefficient here. Ignore it for now.
-        if (BallsInQueue.size() > 0 && spawnCounter <= 0) {
-            List<StaticObject> spawners = new ArrayList<>();
-            for (StaticObject o : staticObj) {
-                if (o.getObjName().equals("EntryPoint")) {
-                    slideCounter = BALLSINQUEUEPADDING;
-                    spawners.add(o);
-                }
-            }
-            // Check if there is a spawner
-            if (spawners.size() > 0) {
-                Random random = new Random();
-
-                StaticObject randomEntryPoint = spawners.get(random.nextInt(spawners.size()));
-
-                String ballColor = BallsInQueue.remove();
-                String[] ballSprites = { "ball0", "ball1", "ball2", "ball3", "ball4" };
-                HashMap<String, PImage> ballSpriteMap = loadSprites(ballSprites);
-                float[] spawnPos = randomEntryPoint.getPosition();
-                Ball obj = new Ball(ballSpriteMap, Color.valueOf(ballColor.toUpperCase()).ordinal(),
-                        spawnPos[0], spawnPos[1]);
-                Balls.add(obj);
-                frameOffset = frameCount;
-                spawnCounter = spawnInterval;
             }
         }
 

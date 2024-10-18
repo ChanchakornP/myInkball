@@ -21,6 +21,7 @@ public class GuiCollisionTest {
         app.delay(1000);
     }
 
+    // This is testing the moving of the ball and line collision in GUI.
     @Test
     public void DrawStages() {
         app.setup();
@@ -45,14 +46,13 @@ public class GuiCollisionTest {
                     0));
         }
         app.mouseReleased(mouseLeft);
-
+        assertEquals(app.lines.size(), 2);
         app.redraw();
 
         for (int i = 0; i < 1000; i++) {
             app.redraw();
             app.delay(i / 30);
         }
-        // app.delay(10000);
 
     }
 }
