@@ -10,9 +10,9 @@ X >  SXX       < X
 X >   X XX H2  < X
 X    XX   X      X
 X                X
-X           T0   X
-X     B2    T0   X
-X           T0   X
+X           T    X
+X     B2    T    X
+X           T    X
 X      ^^^     H0X
 X                X
 XXXXXXX1111XXXXXXX

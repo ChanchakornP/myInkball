@@ -1,0 +1,18 @@
+>>>>>>>>>>>>>>>>>v
+^H1            H2v
+^                v
+^                v
+^  TTTTTTTTTTTT  v
+^  T          T  v
+^  T S      S T  v
+^  T          T  v
+^        B4      v
+^     B1         v
+^  T          T  v
+^  T S      S T  v
+^  T          T  v
+^  TTTTTTTTTTTT  v
+^                v
+^H3            H4v
+^                v
+^<<<<<<<<<<<<<<<<<
